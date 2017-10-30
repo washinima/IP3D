@@ -19,6 +19,8 @@ namespace Mapa
         Matrix rotacao, translacao;
         float scale;
 
+        private float[,] height;
+
         Matrix[] boneTransforms;
 
         public Tanque(ContentManager content, GraphicsDevice graphicsDevice, Camera camera)
@@ -52,6 +54,37 @@ namespace Mapa
             boneTransforms = new Matrix[tank.Bones.Count];
         }
 
+        public void LoadHeights(float[,] height)
+        {
+            this.height = height;
+        }
+
+        public void UpdateCameraHeight()
+        {
+            Vector3 topLeft, topRight, bottomLeft, bottomRight;
+            float topLeftX, topLeftZ;
+            float heightBottom, heightTop, heightFinal;
+
+            float offset = Constants.CameraSurfaceOffset;
+
+            Vector3 position = new Vector3(tank.Root.Transform.Translation.X, tank.Root.Transform.Translation.Y,tank.Root.Transform.Translation.Z);
+
+            topLeftX = (float)Math.Floor(position.X);
+            topLeftZ = (float)Math.Floor(position.Z);
+
+            topLeft = new Vector3(topLeftX, height[(int)topLeftX, (int)topLeftZ], topLeftZ);
+            topRight = new Vector3(topLeft.X + 1, height[(int)topLeftX + 1, (int)topLeftZ], topLeft.Z);
+            bottomLeft = new Vector3(topLeft.X, height[(int)topLeftX, (int)topLeftZ + 1], topLeft.Z + 1);
+            bottomRight = new Vector3(topLeft.X + 1, height[(int)topLeftX + 1, (int)topLeftZ + 1], topLeft.Z + 1);
+
+            heightTop = (position.X - topLeft.X) * topRight.Y + (topRight.X - position.X) * topLeft.Y;
+            heightBottom = (position.X - bottomLeft.X) * bottomRight.Y + (bottomRight.X - position.X) * bottomLeft.Y;
+            heightFinal = (position.Z - topLeft.Z) * heightBottom + (bottomLeft.Z - position.Z) * heightTop;
+
+
+            position.Y = heightFinal + offset;
+        }
+
         public void Draw()
         {
             tank.Root.Transform = Matrix.CreateScale(scale) * rotacao * translacao;
@@ -65,7 +98,7 @@ namespace Mapa
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
-                    effect.World = Matrix.CreateTranslation(new Vector3(100f, 4f, 100f)); //boneTransforms[mesh.ParentBone.Index];
+                    effect.World = boneTransforms[mesh.ParentBone.Index];
                     effect.View = camera.GetViewMatrix();
                     effect.Projection = camera.GetProjection();
                     effect.LightingEnabled = true;
