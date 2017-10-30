@@ -29,7 +29,7 @@ namespace Mapa
             spriteBatch = new SpriteBatch(GraphicsDevice);
             camera = new Camera(Window);
             mapa = new Map(Content, GraphicsDevice, camera);
-            tanque = new Tanque(Content, GraphicsDevice, camera);
+            tanque = new Tanque(Content, GraphicsDevice, camera, 1);
 
             base.Initialize();
         }
