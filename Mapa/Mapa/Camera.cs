@@ -40,9 +40,11 @@ namespace Mapa
             this.window = window;
         }
 
-        public void LoadHeights(float[,] height)
+        public void LoadHeights(NormalPosition[,] heightNormal)
         {
-            this.height = height;
+            for(int x=0; x < heightNormal.GetLength(0) - 1; x++)
+                for (int z = 0; z < heightNormal.GetLength(1) - 1; z++)
+                    this.height[x, z] = heightNormal[x, z].pos.Y;
         }
 
         public void Update()

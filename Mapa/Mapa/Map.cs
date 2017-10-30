@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 
 namespace Mapa
 {
+    public struct NormalPosition
+    {
+        public Vector3 normal;
+        public Vector3 pos;
+    }
+
     public class Map
     {
         VertexBuffer vertexBuffer;
@@ -21,7 +27,8 @@ namespace Mapa
         VertexPositionNormalTexture[] vertexes;
         ushort[] indexes;
         Camera camera;
-        public float[,] alturasY;
+
+        private NormalPosition[,] normalPosition;
 
         public Map(ContentManager content, GraphicsDevice graphicsDevice, Camera camera)
         {
@@ -54,6 +61,8 @@ namespace Mapa
             w = alturas.Width;
             h = alturas.Height;
 
+            normalPosition = new NormalPosition[w,h];
+
             CreateMap(graphicsDevice);
         }
 
@@ -61,7 +70,6 @@ namespace Mapa
         {
             Color[] texels = new Color[w * h];
             vertexes = new VertexPositionNormalTexture[w * h];
-            alturasY = new float[w, h];
             alturas.GetData<Color>(texels);
 
             for (int z = 0; z < h; z++)
@@ -70,10 +78,9 @@ namespace Mapa
                 {
                     float y = (texels[z * w + x].R * scale);
                     vertexes[z * w + x] = new VertexPositionNormalTexture(new Vector3(x, y, z), Vector3.Up, new Vector2(x % 2, z % 2));
-                    alturasY[x,z] = y;
                 }
             }
-            camera.LoadHeights(alturasY);
+            camera.LoadHeights(normalPosition);
             CalculateNormals();
 
             vertexBuffer = new VertexBuffer(graphicsDevice, typeof(VertexPositionNormalTexture), vertexes.Length, BufferUsage.None);
@@ -190,6 +197,8 @@ namespace Mapa
                         normal = Vector3.Normalize(normal1 + normal2 + normal3 + normal4 + normal5 + normal6 + normal7 + normal8);
                     }
                     vertexes[z * w + x].Normal = normal;
+                    normalPosition[x, z].normal = normal;
+                    normalPosition[x, z].pos = vertexes[z * w + x].Position;
                 }
             }
         }
