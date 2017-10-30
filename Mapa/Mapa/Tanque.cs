@@ -22,6 +22,8 @@ namespace Mapa
         int playerNum;
         Keys kForward, kRight, kLeft, kBackward;
 
+        private NormalPosition[,] normalPositions;
+
         Matrix[] boneTransforms;
 
         public Tanque(ContentManager content, GraphicsDevice graphicsDevice, Camera camera, int playerNum)
@@ -70,6 +72,60 @@ namespace Mapa
             hatchTransform = hatchBone.Transform;
 
             boneTransforms = new Matrix[tank.Bones.Count];
+        }
+
+        public void UpdateTankHeight()
+        {
+            Vector3 topLeft, topRight, bottomLeft, bottomRight;
+            float topLeftX, topLeftZ;
+            float heightBottom, heightTop, heightFinal;
+
+            float offset = Constants.CameraSurfaceOffset;
+
+            Vector3 position = new Vector3(tank.Root.Transform.Translation.X, tank.Root.Transform.Translation.Y,tank.Root.Transform.Translation.Z);
+
+            topLeftX = (float)Math.Floor(position.X);
+            topLeftZ = (float)Math.Floor(position.Z);
+
+            topLeft = new Vector3(topLeftX, normalPositions[(int)topLeftX, (int)topLeftZ].pos.Y, topLeftZ);
+            topRight = new Vector3(topLeft.X + 1, normalPositions[(int)topLeftX + 1, (int)topLeftZ].pos.Y, topLeft.Z);
+            bottomLeft = new Vector3(topLeft.X, normalPositions[(int)topLeftX, (int)topLeftZ + 1].pos.Y, topLeft.Z + 1);
+            bottomRight = new Vector3(topLeft.X + 1, normalPositions[(int)topLeftX + 1, (int)topLeftZ + 1].pos.Y, topLeft.Z + 1);
+
+            heightTop = (position.X - topLeft.X) * topRight.Y + (topRight.X - position.X) * topLeft.Y;
+            heightBottom = (position.X - bottomLeft.X) * bottomRight.Y + (bottomRight.X - position.X) * bottomLeft.Y;
+            heightFinal = (position.Z - topLeft.Z) * heightBottom + (bottomLeft.Z - position.Z) * heightTop;
+
+
+            position.Y = heightFinal + offset;
+        }
+
+        public void LoadMapNormalsPos(NormalPosition[,] a)
+        {
+            normalPositions = a;
+        }
+
+        public void UpdateTankNormal()
+        {
+            NormalPosition topLeft, topRight, bottomLeft, bottomRight;
+            float topLeftX, topLeftZ;
+            Vector3 normalBottom, normalTop, normalFinal;
+            Vector3 position = tank.Root.Transform.Translation;
+
+            topLeftX = (float)Math.Floor(position.X);
+            topLeftZ = (float)Math.Floor(position.Z);
+                 
+            topLeft = normalPositions[(int)topLeftX, (int)topLeftZ];
+            topRight = normalPositions[(int)topLeftX + 1, (int)topLeftZ];
+            bottomLeft = normalPositions[(int)topLeftX, (int)topLeftZ + 1];
+            bottomRight = normalPositions[(int)topLeftX + 1, (int)topLeftZ + 1];
+            
+            normalTop = (position.X - topLeft.pos.X) * topRight.normal + (topRight.pos.X - position.X) * topLeft.normal;
+            normalBottom = (position.X - bottomLeft.pos.X) * bottomRight.normal + (bottomRight.pos.X - position.X) * bottomLeft.normal;
+            normalFinal = (position.Z - topLeft.pos.Z) * normalBottom + (bottomLeft.pos.Z- position.Z) * normalTop;
+
+            normalFinal = Vector3.Normalize(normalFinal);
+
         }
 
         public void Update()
