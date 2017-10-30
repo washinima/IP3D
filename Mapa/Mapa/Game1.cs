@@ -30,6 +30,7 @@ namespace Mapa
             camera = new Camera(Window);
             mapa = new Map(Content, GraphicsDevice, camera);
             tanque = new Tanque(Content, GraphicsDevice, camera, 1);
+            tanque.LoadMapNormalsPos(mapa.normalPosition);
 
             base.Initialize();
         }
@@ -53,6 +54,7 @@ namespace Mapa
                 Exit();
 
             camera.Update();
+            tanque.Update();
 
             base.Update(gameTime);
         }

@@ -21,7 +21,7 @@ namespace Mapa
         float scale, speed;
         int playerNum;
         Keys kForward, kRight, kLeft, kBackward;
-        private Vector3 tankForward, tankRight, tankNormal;
+        private Vector3 tankForward, tankRight, tankNormal, origin;
 
         private NormalPosition[,] normalPositions;
 
@@ -36,6 +36,7 @@ namespace Mapa
             speed = Constants.TankMovSpeed;
             translacao = Matrix.CreateTranslation(new Vector3(100f, 4f, 100f));
             rotacao = Matrix.Identity;
+            origin = Vector3.Forward;
 
             switch (playerNum)
             {
@@ -77,15 +78,16 @@ namespace Mapa
 
         public void Update()
         {
-            translacao = Matrix.CreateTranslation(Movement());
+            UpdateTankNormal();
 
+            translacao = Matrix.CreateTranslation(Movement());
 
             tank.Root.Transform = Matrix.CreateScale(scale) * rotacao * translacao;
             turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretTransform;
             cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonTransform;
         }
 
-        public void UpdateTankHeight()
+        private float UpdateTankHeight()
         {
             Vector3 topLeft, topRight, bottomLeft, bottomRight;
             float topLeftX, topLeftZ;
@@ -93,7 +95,7 @@ namespace Mapa
 
             float offset = Constants.CameraSurfaceOffset;
 
-            Vector3 position = new Vector3(tank.Root.Transform.Translation.X, tank.Root.Transform.Translation.Y,tank.Root.Transform.Translation.Z);
+            Vector3 position = tank.Root.Transform.Translation;
 
             topLeftX = (float)Math.Floor(position.X);
             topLeftZ = (float)Math.Floor(position.Z);
@@ -108,7 +110,7 @@ namespace Mapa
             heightFinal = (position.Z - topLeft.Z) * heightBottom + (bottomLeft.Z - position.Z) * heightTop;
 
 
-            position.Y = heightFinal + offset;
+             return heightFinal;
         }
 
         public void LoadMapNormalsPos(NormalPosition[,] a)
@@ -116,7 +118,7 @@ namespace Mapa
             normalPositions = a;
         }
 
-        public void UpdateTankNormal()
+        private void UpdateTankNormal()
         {
             NormalPosition topLeft, topRight, bottomLeft, bottomRight;
             float topLeftX, topLeftZ;
@@ -136,7 +138,12 @@ namespace Mapa
             normalFinal = (position.Z - topLeft.pos.Z) * normalBottom + (bottomLeft.pos.Z- position.Z) * normalTop;
 
             tankNormal = Vector3.Normalize(normalFinal);
+            tankRight = Vector3.Cross(origin, tankNormal);
+            tankForward = Vector3.Cross(tankNormal, tankRight);
 
+            rotacao.Up = tankNormal;
+            rotacao.Right = tankRight;
+            rotacao.Forward = tankForward;
         }
 
         private Vector3 Movement()
@@ -158,6 +165,8 @@ namespace Mapa
                 position.X = oldPosition.X;
             if (position.Z < 0 || position.Z > normalPositions.GetLength(1) - 1)
                 position.Z = oldPosition.Z;
+
+            position.Y = UpdateTankHeight();
 
             return position;
         }

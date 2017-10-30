@@ -28,7 +28,7 @@ namespace Mapa
         ushort[] indexes;
         Camera camera;
 
-        private NormalPosition[,] normalPosition;
+        public NormalPosition[,] normalPosition;
 
         public Map(ContentManager content, GraphicsDevice graphicsDevice, Camera camera)
         {
@@ -61,7 +61,7 @@ namespace Mapa
             w = alturas.Width;
             h = alturas.Height;
 
-            normalPosition = new NormalPosition[w,h];
+            normalPosition = new NormalPosition[w, h];
 
             CreateMap(graphicsDevice);
         }
