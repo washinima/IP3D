@@ -59,7 +59,7 @@ namespace Mapa
             this.height = height;
         }
 
-        public void UpdateCameraHeight()
+        public void UpdateTankHeight()
         {
             Vector3 topLeft, topRight, bottomLeft, bottomRight;
             float topLeftX, topLeftZ;
