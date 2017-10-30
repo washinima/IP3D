@@ -21,6 +21,7 @@ namespace Mapa
         float scale, speed;
         int playerNum;
         Keys kForward, kRight, kLeft, kBackward;
+        private Vector3 tankForward, tankRight, tankNormal;
 
         private NormalPosition[,] normalPositions;
 
@@ -74,6 +75,16 @@ namespace Mapa
             boneTransforms = new Matrix[tank.Bones.Count];
         }
 
+        public void Update()
+        {
+            translacao = Matrix.CreateTranslation(Movement());
+
+
+            tank.Root.Transform = Matrix.CreateScale(scale) * rotacao * translacao;
+            turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretTransform;
+            cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonTransform;
+        }
+
         public void UpdateTankHeight()
         {
             Vector3 topLeft, topRight, bottomLeft, bottomRight;
@@ -120,22 +131,12 @@ namespace Mapa
             bottomLeft = normalPositions[(int)topLeftX, (int)topLeftZ + 1];
             bottomRight = normalPositions[(int)topLeftX + 1, (int)topLeftZ + 1];
             
-            normalTop = (position.X - topLeft.pos.X) * topRight.normal + (topRight.pos.X - position.X) * topLeft.normal;
-            normalBottom = (position.X - bottomLeft.pos.X) * bottomRight.normal + (bottomRight.pos.X - position.X) * bottomLeft.normal;
+            normalTop = Vector3.Normalize((position.X - topLeft.pos.X) * topRight.normal + (topRight.pos.X - position.X) * topLeft.normal);
+            normalBottom = Vector3.Normalize((position.X - bottomLeft.pos.X) * bottomRight.normal + (bottomRight.pos.X - position.X) * bottomLeft.normal);
             normalFinal = (position.Z - topLeft.pos.Z) * normalBottom + (bottomLeft.pos.Z- position.Z) * normalTop;
 
-            normalFinal = Vector3.Normalize(normalFinal);
+            tankNormal = Vector3.Normalize(normalFinal);
 
-        }
-
-        public void Update()
-        {
-            translacao = Matrix.CreateTranslation(Movement());
-
-
-            tank.Root.Transform = Matrix.CreateScale(scale) * rotacao * translacao;
-            turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretTransform;
-            cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonTransform;
         }
 
         private Vector3 Movement()
@@ -153,9 +154,9 @@ namespace Mapa
             if (Keyboard.GetState().IsKeyDown(kLeft))
                 position -= speed * tankRight;
 
-            if (position.X < 0 || position.X > height.GetLength(0) - 1)
+            if (position.X < 0 || position.X > normalPositions.GetLength(0) - 1)
                 position.X = oldPosition.X;
-            if (position.Z < 0 || position.Z > height.GetLength(1) - 1)
+            if (position.Z < 0 || position.Z > normalPositions.GetLength(1) - 1)
                 position.Z = oldPosition.Z;
 
             return position;
