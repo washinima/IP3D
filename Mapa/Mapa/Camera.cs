@@ -17,7 +17,7 @@ namespace Mapa
         float yaw;
         float pitch;
         float speed, sensitivity;
-        float[,] height;
+        NormalPosition[,] heightNormalPositions;
         float offset;
         int cameraOption;
         private GameWindow window;
@@ -42,9 +42,7 @@ namespace Mapa
 
         public void LoadHeights(NormalPosition[,] heightNormal)
         {
-            for(int x=0; x < heightNormal.GetLength(0) - 1; x++)
-                for (int z = 0; z < heightNormal.GetLength(1) - 1; z++)
-                    this.height[x, z] = heightNormal[x, z].pos.Y;
+            heightNormalPositions = heightNormal;
         }
 
         public void Update()
@@ -73,10 +71,10 @@ namespace Mapa
             topLeftX = (float)Math.Floor(position.X);
             topLeftZ = (float)Math.Floor(position.Z);
 
-            topLeft = new Vector3(topLeftX, height[(int)topLeftX, (int)topLeftZ], topLeftZ);
-            topRight = new Vector3(topLeft.X + 1, height[(int)topLeftX + 1, (int)topLeftZ], topLeft.Z);
-            bottomLeft = new Vector3(topLeft.X, height[(int)topLeftX, (int)topLeftZ + 1], topLeft.Z + 1);
-            bottomRight = new Vector3(topLeft.X + 1, height[(int)topLeftX + 1, (int)topLeftZ + 1], topLeft.Z + 1);
+            topLeft = new Vector3(topLeftX, heightNormalPositions[(int)topLeftX, (int)topLeftZ].pos.Y, topLeftZ);
+            topRight = new Vector3(topLeft.X + 1, heightNormalPositions[(int)topLeftX + 1, (int)topLeftZ].pos.Y, topLeft.Z);
+            bottomLeft = new Vector3(topLeft.X, heightNormalPositions[(int)topLeftX, (int)topLeftZ + 1].pos.Y, topLeft.Z + 1);
+            bottomRight = new Vector3(topLeft.X + 1, heightNormalPositions[(int)topLeftX + 1, (int)topLeftZ + 1].pos.Y, topLeft.Z + 1);
 
             heightTop = (position.X - topLeft.X) * topRight.Y + (topRight.X - position.X) * topLeft.Y;
             heightBottom = (position.X - bottomLeft.X) * bottomRight.Y + (bottomRight.X - position.X) * bottomLeft.Y;
@@ -108,9 +106,9 @@ namespace Mapa
             Vector3 oldPosition = position;
             BaseMovement();
 
-            if (position.X < 0 || position.X > height.GetLength(0) - 1)
+            if (position.X < 0 || position.X > heightNormalPositions.GetLength(0) - 1)
                 position.X = oldPosition.X;
-            if (position.Z < 0 || position.Z > height.GetLength(1) - 1)
+            if (position.Z < 0 || position.Z > heightNormalPositions.GetLength(1) - 1)
                 position.Z = oldPosition.Z;
 
             UpdateCameraHeight();
@@ -187,7 +185,7 @@ namespace Mapa
 
         private bool IsOutOfBoundaries()
         {
-            if (position.X < height.GetLength(0) - 1 && position.X > 0 && position.Z < height.GetLength(1) - 1 && position.Z > 0)
+            if (position.X < heightNormalPositions.GetLength(0) - 1 && position.X > 0 && position.Z < heightNormalPositions.GetLength(1) - 1 && position.Z > 0)
                 return false;
             return true;
         }
@@ -196,7 +194,7 @@ namespace Mapa
         {
             position.Normalize();
             position = new Vector3(Math.Abs(position.X), position.Y, Math.Abs(position.Z));
-            position = position * (height.GetLength(0) - 2);
+            position = position * (heightNormalPositions.GetLength(0) - 2);
         }
 
         public Vector3 GetDirection() => direction;
