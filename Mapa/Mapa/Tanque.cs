@@ -35,6 +35,7 @@ namespace Mapa
             scale = Constants.TankScale;
             speed = Constants.TankMovSpeed;
             translacao = Matrix.CreateTranslation(new Vector3(100f, 4f, 100f));
+            tank.Root.Transform = translacao;
             rotacao = Matrix.Identity;
             origin = Vector3.Forward;
             direction = origin;
@@ -140,7 +141,7 @@ namespace Mapa
             normalFinal = (position.Z - topLeft.pos.Z) * normalBottom + (bottomLeft.pos.Z- position.Z) * normalTop;
 
             tankNormal = Vector3.Normalize(normalFinal);
-            tankRight = Vector3.Cross(direction, tankNormal);
+            tankRight = Vector3.Cross(-direction, tankNormal);
             tankForward = Vector3.Cross(tankNormal, tankRight);
 
             rotacao.Up = tankNormal;
@@ -155,8 +156,6 @@ namespace Mapa
 
         private Vector3 Movement()
         {
-            
-
             Vector3 oldPosition = tank.Root.Transform.Translation;
             Vector3 position = tank.Root.Transform.Translation;
 
@@ -166,9 +165,9 @@ namespace Mapa
                 position -= speed * tankForward;
 
             if (Keyboard.GetState().IsKeyDown(kRight))
-                yaw += MathHelper.ToRadians(rotSpeed);
-            if (Keyboard.GetState().IsKeyDown(kLeft))
                 yaw -= MathHelper.ToRadians(rotSpeed);
+            if (Keyboard.GetState().IsKeyDown(kLeft))
+                yaw += MathHelper.ToRadians(rotSpeed);
 
             Matrix rotationPlane = Matrix.CreateFromAxisAngle(tankNormal, yaw);
             direction = Vector3.Transform(origin, rotationPlane);
@@ -196,10 +195,7 @@ namespace Mapa
                     effect.World = boneTransforms[mesh.ParentBone.Index];
                     effect.View = camera.GetViewMatrix();
                     effect.Projection = camera.GetProjection();
-                    effect.LightingEnabled = true;
-                    effect.DirectionalLight0.DiffuseColor = Vector3.Normalize(new Vector3(255f, 255f, 255f));
-                    effect.DirectionalLight0.Direction = new Vector3(-1f, -0.5f, 0f);
-                    effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
+                    Lighting.SetLight(effect);
                 }
                 mesh.Draw();
             }

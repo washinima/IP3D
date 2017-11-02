@@ -12,7 +12,7 @@ namespace Mapa
     {
         MouseState mouseState, oldMouseState;
         Vector3 origin, originSide, direction, directionSide, normal, normalOrigin;
-        Vector3 position, positionOrigin;
+        Vector3 position;
         Matrix rotation;
         float yaw;
         float pitch;

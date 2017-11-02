@@ -39,19 +39,8 @@ namespace Mapa
             {
                 View = camera.GetViewMatrix(),
                 Projection = camera.GetProjection(),
-                TextureEnabled = true,
-                LightingEnabled = true,
-                VertexColorEnabled = false
             };
-            //effect.EnableDefaultLighting();
-            effect.DirectionalLight0.DiffuseColor = Vector3.Normalize(new Vector3(255f, 255f, 255f));
-            effect.DirectionalLight0.Direction = new Vector3(-1f, -0.5f, 0f);
-            effect.DirectionalLight1.DiffuseColor = Vector3.Normalize(new Vector3(255f, 0f, 0f));
-            effect.DirectionalLight1.Direction = new Vector3(-1f, -0.5f, 0f);
-            effect.DirectionalLight1.Enabled = false;
-            //effect.DirectionalLight0.SpecularColor = new Vector3(0, 0.1f, 0);
-            effect.AmbientLightColor = new Vector3(0.2f, 0.2f, 0.2f);
-            //effect.EmissiveColor = new Vector3(1f, 1f, 1f);
+            Lighting.SetLight(effect);
 
             scale = Constants.MapHeightScale;
 
