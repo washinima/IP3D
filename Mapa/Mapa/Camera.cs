@@ -51,6 +51,8 @@ namespace Mapa
                 cameraOption = 1;
             if (Keyboard.GetState().IsKeyDown(Keys.F2))
                 cameraOption = 2;
+            if (Keyboard.GetState().IsKeyDown(Keys.F3))
+                cameraOption = 3;
 
             switch (cameraOption)
             {
@@ -59,6 +61,9 @@ namespace Mapa
                     break;
                 case 2:
                     FreeLookUpdate();
+                    break;
+                case 3:
+                    TankFollowUpdate();
                     break;
             }
         }
@@ -112,6 +117,11 @@ namespace Mapa
                 position.Z = oldPosition.Z;
 
             UpdateCameraHeight();
+        }
+
+        private void TankFollowUpdate()
+        {
+            
         }
 
         private void BaseMovement()

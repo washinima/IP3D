@@ -14,7 +14,7 @@ namespace Mapa
 
         //----------------CAMERA----------------//
         public static float CameraSurfaceOffset = 1.5f;
-        public static float CameraMovementSpeed = 2.2f;
+        public static float CameraMovementSpeed = 1.2f;
         public static float CameraSensitivity = 0.2f;
         public static Vector3 CameraInitialPosition = new Vector3(100f, 50f, 100f);
 

@@ -18,10 +18,10 @@ namespace Mapa
         Matrix turretTransform, cannonTransform, rightFrontWheelTransform, leftFrontWheelTransform, rightBackWheelTransform, leftBackWheelTransform, hatchTransform;
         float turretAngle, cannonAngle;
         Matrix rotacao, translacao;
-        float scale, speed;
+        float scale, speed, rotSpeed, yaw;
         int playerNum;
         Keys kForward, kRight, kLeft, kBackward;
-        private Vector3 tankForward, tankRight, tankNormal, origin;
+        private Vector3 tankForward, tankRight, tankNormal, origin, direction;
 
         private NormalPosition[,] normalPositions;
 
@@ -37,6 +37,9 @@ namespace Mapa
             translacao = Matrix.CreateTranslation(new Vector3(100f, 4f, 100f));
             rotacao = Matrix.Identity;
             origin = Vector3.Forward;
+            direction = origin;
+            rotSpeed = 1f;
+            //rotacao = Matrix.CreateRotationY(MathHelper.ToRadians(180));
 
             switch (playerNum)
             {
@@ -78,9 +81,8 @@ namespace Mapa
 
         public void Update()
         {
-            UpdateTankNormal();
-
             translacao = Matrix.CreateTranslation(Movement());
+            UpdateTankNormal();
 
             tank.Root.Transform = Matrix.CreateScale(scale) * rotacao * translacao;
             turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretTransform;
@@ -138,12 +140,17 @@ namespace Mapa
             normalFinal = (position.Z - topLeft.pos.Z) * normalBottom + (bottomLeft.pos.Z- position.Z) * normalTop;
 
             tankNormal = Vector3.Normalize(normalFinal);
-            tankRight = Vector3.Cross(origin, tankNormal);
+            tankRight = Vector3.Cross(direction, tankNormal);
             tankForward = Vector3.Cross(tankNormal, tankRight);
 
             rotacao.Up = tankNormal;
             rotacao.Right = tankRight;
             rotacao.Forward = tankForward;
+            rotacao *= Matrix.CreateFromAxisAngle(tankNormal, MathHelper.ToRadians(180));
+            Console.WriteLine(tankNormal);
+            Console.WriteLine(tankRight);
+            Console.WriteLine(tankForward);
+            Console.WriteLine("_______________________________________");
         }
 
         private Vector3 Movement()
@@ -157,9 +164,12 @@ namespace Mapa
                 position -= speed * tankForward;
 
             if (Keyboard.GetState().IsKeyDown(kRight))
-                position += speed * tankRight;
+                yaw += MathHelper.ToRadians(rotSpeed);
             if (Keyboard.GetState().IsKeyDown(kLeft))
-                position -= speed * tankRight;
+                yaw -= MathHelper.ToRadians(rotSpeed);
+
+            Matrix rotationPlane = Matrix.CreateFromAxisAngle(tankNormal, yaw);
+            direction = Vector3.Transform(origin, rotationPlane);
 
             if (position.X < 0 || position.X > normalPositions.GetLength(0) - 1)
                 position.X = oldPosition.X;
