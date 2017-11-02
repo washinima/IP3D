@@ -155,6 +155,8 @@ namespace Mapa
 
         private Vector3 Movement()
         {
+            
+
             Vector3 oldPosition = tank.Root.Transform.Translation;
             Vector3 position = tank.Root.Transform.Translation;
 
@@ -177,6 +179,8 @@ namespace Mapa
                 position.Z = oldPosition.Z;
 
             position.Y = UpdateTankHeight();
+
+            camera.PosicaoRotationTank(position, tankForward);
 
             return position;
         }

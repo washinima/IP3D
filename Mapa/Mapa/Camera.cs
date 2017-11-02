@@ -12,7 +12,7 @@ namespace Mapa
     {
         MouseState mouseState, oldMouseState;
         Vector3 origin, originSide, direction, directionSide, normal, normalOrigin;
-        Vector3 position;
+        Vector3 position, positionOrigin;
         Matrix rotation;
         float yaw;
         float pitch;
@@ -21,6 +21,10 @@ namespace Mapa
         float offset;
         int cameraOption;
         private GameWindow window;
+
+        //TANK
+        Vector3 posicaoTank;
+        Vector3 tankFoward;
 
         public Camera(GameWindow window)
         {
@@ -89,6 +93,27 @@ namespace Mapa
             position.Y = heightFinal + offset;
         }
 
+        private void TankFollowUpdate()
+        {
+            /*positionOrigin = n
+
+            Matrix rotationMatrix = Matrix.CreateRotationY(tankYaw);
+
+            position = Vector3.TransformNormal(positionOrigin, rotationMatrix);*/
+
+            position = posicaoTank;
+            position -= Vector3.Normalize(tankFoward) * 3;
+            position.Y += 1f;
+            direction = posicaoTank - position;
+
+        }
+
+        public void PosicaoRotationTank(Vector3 posicaoTank, Vector3 tankFoward)
+        {
+            this.posicaoTank = posicaoTank;
+            this.tankFoward = tankFoward;
+        }
+
         private void FreeLookUpdate()
         {
             BaseMovement();
@@ -117,11 +142,6 @@ namespace Mapa
                 position.Z = oldPosition.Z;
 
             UpdateCameraHeight();
-        }
-
-        private void TankFollowUpdate()
-        {
-            
         }
 
         private void BaseMovement()
