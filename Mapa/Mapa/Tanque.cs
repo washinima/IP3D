@@ -34,13 +34,12 @@ namespace Mapa
             tank = content.Load<Model>("tank");
             scale = Constants.TankScale;
             speed = Constants.TankMovSpeed;
+            rotSpeed = Constants.TankRotSpeed;
             translacao = Matrix.CreateTranslation(new Vector3(100f, 4f, 100f));
             tank.Root.Transform = translacao;
             rotacao = Matrix.Identity;
             origin = Vector3.Forward;
             direction = origin;
-            rotSpeed = 1f;
-            //rotacao = Matrix.CreateRotationY(MathHelper.ToRadians(180));
 
             switch (playerNum)
             {
@@ -96,8 +95,6 @@ namespace Mapa
             float topLeftX, topLeftZ;
             float heightBottom, heightTop, heightFinal;
 
-            float offset = Constants.CameraSurfaceOffset;
-
             Vector3 position = tank.Root.Transform.Translation;
 
             topLeftX = (float)Math.Floor(position.X);
@@ -148,10 +145,6 @@ namespace Mapa
             rotacao.Right = tankRight;
             rotacao.Forward = tankForward;
             rotacao *= Matrix.CreateFromAxisAngle(tankNormal, MathHelper.ToRadians(180));
-            Console.WriteLine(tankNormal);
-            Console.WriteLine(tankRight);
-            Console.WriteLine(tankForward);
-            Console.WriteLine("_______________________________________");
         }
 
         private Vector3 Movement()

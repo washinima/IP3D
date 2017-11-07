@@ -20,10 +20,11 @@ namespace Mapa
 
 
         //----------------MAPA----------------//
-        public static float MapHeightScale = 0.03f;
+        public static float MapHeightScale = 0.025f;
 
         //----------------TANQUE----------------//
         public static float TankScale = 0.002f;
         public static float TankMovSpeed = 0.2f;
+        public static float TankRotSpeed = 4f;
     }
 }

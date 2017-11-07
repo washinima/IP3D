@@ -67,6 +67,12 @@ namespace Mapa
                     FreeLookUpdate();
                     break;
                 case 3:
+                    rotation = Matrix.Identity;
+                    yaw = 0f;
+                    pitch = 0f;
+                    direction = origin;
+                    directionSide = originSide;
+                    normal = normalOrigin;
                     TankFollowUpdate();
                     break;
             }
@@ -95,17 +101,10 @@ namespace Mapa
 
         private void TankFollowUpdate()
         {
-            /*positionOrigin = n
-
-            Matrix rotationMatrix = Matrix.CreateRotationY(tankYaw);
-
-            position = Vector3.TransformNormal(positionOrigin, rotationMatrix);*/
-
             position = posicaoTank;
             position -= Vector3.Normalize(tankFoward) * 3;
             position.Y += 1f;
             direction = posicaoTank - position;
-
         }
 
         public void PosicaoRotationTank(Vector3 posicaoTank, Vector3 tankFoward)
