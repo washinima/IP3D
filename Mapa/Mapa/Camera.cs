@@ -57,6 +57,8 @@ namespace Mapa
                 cameraOption = 2;
             if (Keyboard.GetState().IsKeyDown(Keys.F3))
                 cameraOption = 3;
+            if (Keyboard.GetState().IsKeyDown(Keys.F4))
+                cameraOption = 4;
 
             switch (cameraOption)
             {
@@ -73,7 +75,16 @@ namespace Mapa
                     direction = origin;
                     directionSide = originSide;
                     normal = normalOrigin;
-                    TankFollowUpdate();
+                    TankFollowUpdate(true);
+                    break;
+                case 4:
+                    rotation = Matrix.Identity;
+                    yaw = 0f;
+                    pitch = 0f;
+                    direction = origin;
+                    directionSide = originSide;
+                    normal = normalOrigin;
+                    TankFollowUpdate(false);
                     break;
             }
         }
@@ -99,10 +110,13 @@ namespace Mapa
             position.Y = heightFinal + offset;
         }
 
-        private void TankFollowUpdate()
+        private void TankFollowUpdate(bool isFromBack)
         {
             position = posicaoTank;
-            position -= Vector3.Normalize(tankFoward) * 3;
+            if (isFromBack)
+                position -= Vector3.Normalize(tankFoward) * 3;
+            else
+                position += Vector3.Normalize(tankFoward) * 3;
             position.Y += 1f;
             direction = posicaoTank - position;
         }

@@ -11,7 +11,7 @@ namespace Mapa
     public static class Lighting
     {
         public static Vector3 Color = new Vector3(1f, 1f, 1f);
-        public static Vector3 Direction = new Vector3(-1f, -0.5f, 0f);
+        public static Vector3 Direction = new Vector3(1f, -0.5f, 0f);
         public static Vector3 Ambient = Color / 10f;
 
         public static void SetLight(BasicEffect effect)
