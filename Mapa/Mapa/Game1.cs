@@ -63,8 +63,6 @@ namespace Mapa
             foreach (Tanque tanque in tanques)
                 tanque.Update();
 
-            tanque.Update();
-            tanque2.Update();
             base.Update(gameTime);
         }
 
