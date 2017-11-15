@@ -38,8 +38,6 @@ namespace Mapa
             foreach (Tanque tanque in tanques)
                 tanque.LoadMapNormalsPos(mapa.normalPosition);
 
-            tanque.LoadMapNormalsPos(mapa.normalPosition);
-            tanque2.LoadMapNormalsPos(mapa.normalPosition);
             base.Initialize();
         }
 

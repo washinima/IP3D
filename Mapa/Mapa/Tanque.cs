@@ -38,8 +38,8 @@ namespace Mapa
             scale = Constants.TankScale;
             speed = Constants.TankMovSpeed;
             rotSpeed = Constants.TankRotSpeed;
-            tPos = translacao;
             translacao = Matrix.CreateTranslation(posicaoInicial);
+            tPos = translacao;
             rotacao = Matrix.Identity;
             origin = Vector3.Forward;
             direction = origin;
