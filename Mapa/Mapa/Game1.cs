@@ -11,7 +11,7 @@ namespace Mapa
         Map mapa;
         Camera camera;
         Tanque tanque, tanque2;
-
+        
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this)
@@ -29,11 +29,12 @@ namespace Mapa
             spriteBatch = new SpriteBatch(GraphicsDevice);
             camera = new Camera(Window);
             mapa = new Map(Content, GraphicsDevice, camera);
-            tanque = new Tanque(Content, GraphicsDevice, camera, 1);
-            //tanque2 = new Tanque(Content, GraphicsDevice, camera, 2);
-            tanque.LoadMapNormalsPos(mapa.normalPosition);
-            //tanque2.LoadMapNormalsPos(mapa.normalPosition);
 
+            tanque = new Tanque(Content, GraphicsDevice, camera, 1);
+            tanque2 = new Tanque(Content, GraphicsDevice, camera, 2);
+
+            tanque.LoadMapNormalsPos(mapa.normalPosition);
+            tanque2.LoadMapNormalsPos(mapa.normalPosition);
             base.Initialize();
         }
 
@@ -56,9 +57,9 @@ namespace Mapa
                 Exit();
 
             camera.Update();
-            tanque.Update();
-            //tanque2.Update();
 
+            tanque.Update();
+            tanque2.Update();
             base.Update(gameTime);
         }
 
@@ -69,8 +70,7 @@ namespace Mapa
 
             mapa.Draw(GraphicsDevice);
             tanque.Draw();
-            //tanque2.Draw();
-
+            tanque2.Draw();
             base.Draw(gameTime);
         }
     }

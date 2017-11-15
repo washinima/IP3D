@@ -24,6 +24,8 @@ namespace Mapa
         Keys kForward, kRight, kLeft, kBackward;
         private Vector3 tankForward, tankRight, tankNormal, origin, direction;
 
+        private Matrix tPos;
+
         private NormalPosition[,] normalPositions;
 
         Matrix[] boneTransforms;
@@ -37,7 +39,7 @@ namespace Mapa
             speed = Constants.TankMovSpeed;
             rotSpeed = Constants.TankRotSpeed;
             translacao = Matrix.CreateTranslation(new Vector3(100f, 4f, 100f));
-            tank.Root.Transform = translacao;
+            tPos = translacao;
             rotacao = Matrix.Identity;
             origin = Vector3.Forward;
             direction = origin;
@@ -89,9 +91,10 @@ namespace Mapa
         public void Update()
         {
             translacao = Matrix.CreateTranslation(Movement());
+
             UpdateTankNormal();
 
-            tank.Root.Transform = Matrix.CreateScale(scale) * rotacao * translacao;
+            tPos = Matrix.CreateScale(scale) * rotacao * translacao;
             turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretTransform;
             cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonTransform;
         }
@@ -102,7 +105,7 @@ namespace Mapa
             float topLeftX, topLeftZ;
             float heightBottom, heightTop, heightFinal;
 
-            Vector3 position = tank.Root.Transform.Translation;
+            Vector3 position = tPos.Translation;
 
             topLeftX = (float)Math.Floor(position.X);
             topLeftZ = (float)Math.Floor(position.Z);
@@ -130,7 +133,8 @@ namespace Mapa
             NormalPosition topLeft, topRight, bottomLeft, bottomRight;
             float topLeftX, topLeftZ;
             Vector3 normalBottom, normalTop, normalFinal;
-            Vector3 position = tank.Root.Transform.Translation;
+            Vector3 position = tPos.Translation
+                ;
 
             topLeftX = (float)Math.Floor(position.X);
             topLeftZ = (float)Math.Floor(position.Z);
@@ -156,8 +160,8 @@ namespace Mapa
 
         private Vector3 Movement()
         {
-            Vector3 oldPosition = tank.Root.Transform.Translation;
-            Vector3 position = tank.Root.Transform.Translation;
+            Vector3 oldPosition = tPos.Translation;
+            Vector3 position = tPos.Translation;
 
             if (Keyboard.GetState().IsKeyDown(kForward))
             {
@@ -235,6 +239,7 @@ namespace Mapa
 
         public void Draw()
         {
+            tank.Root.Transform = tPos;
             tank.CopyAbsoluteBoneTransformsTo(boneTransforms);
 
             foreach (ModelMesh mesh in tank.Meshes)
@@ -244,6 +249,7 @@ namespace Mapa
                     effect.World = boneTransforms[mesh.ParentBone.Index];
                     effect.View = camera.GetViewMatrix();
                     effect.Projection = camera.GetProjection();
+
                     Lighting.SetLight(effect);
                 }
                 mesh.Draw();
