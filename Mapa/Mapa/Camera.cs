@@ -135,7 +135,7 @@ namespace Mapa
             {
                 position += speed * normal;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.NumPad9))
+            if (Keyboard.GetState().IsKeyDown(Keys.NumPad1))
             {
                 position -= speed * normal;
             }

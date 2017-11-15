@@ -26,5 +26,6 @@ namespace Mapa
         public static float TankScale = 0.002f;
         public static float TankMovSpeed = 0.2f;
         public static float TankRotSpeed = 4f;
+        public static float CannonRotSpeed = 0.02f;
     }
 }

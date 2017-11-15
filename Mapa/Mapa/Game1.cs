@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Mapa
 {
@@ -10,8 +11,8 @@ namespace Mapa
         SpriteBatch spriteBatch;
         Map mapa;
         Camera camera;
-        Tanque tanque, tanque2;
-        
+        List<Tanque> tanques;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this)
@@ -29,9 +30,13 @@ namespace Mapa
             spriteBatch = new SpriteBatch(GraphicsDevice);
             camera = new Camera(Window);
             mapa = new Map(Content, GraphicsDevice, camera);
-
-            tanque = new Tanque(Content, GraphicsDevice, camera, 1);
-            tanque2 = new Tanque(Content, GraphicsDevice, camera, 2);
+            tanques = new List<Tanque>
+            {
+                new Tanque(Content, GraphicsDevice, camera, 1, new Vector3(100f, 4f, 100f)),
+                new Tanque(Content, GraphicsDevice, camera, 2, new Vector3(100f, 4f, 98f))
+            };
+            foreach (Tanque tanque in tanques)
+                tanque.LoadMapNormalsPos(mapa.normalPosition);
 
             tanque.LoadMapNormalsPos(mapa.normalPosition);
             tanque2.LoadMapNormalsPos(mapa.normalPosition);
@@ -57,6 +62,8 @@ namespace Mapa
                 Exit();
 
             camera.Update();
+            foreach (Tanque tanque in tanques)
+                tanque.Update();
 
             tanque.Update();
             tanque2.Update();
@@ -69,8 +76,10 @@ namespace Mapa
             GraphicsDevice.Clear(Constants.ScreenColor);
 
             mapa.Draw(GraphicsDevice);
-            tanque.Draw();
-            tanque2.Draw();
+            foreach (Tanque tanque in tanques)
+                tanque.Draw();
+
+
             base.Draw(gameTime);
         }
     }
