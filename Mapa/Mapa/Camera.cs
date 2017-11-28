@@ -16,9 +16,7 @@ namespace Mapa
         Matrix rotation;
         float yaw;
         float pitch;
-        float speed, sensitivity;
         NormalPosition[,] heightNormalPositions;
-        float offset;
         int cameraOption;
         private GameWindow window;
 
@@ -37,10 +35,7 @@ namespace Mapa
             mouseState = Mouse.GetState();
             yaw = 0;
             pitch = 0;
-            speed = Constants.CameraMovementSpeed;
-            sensitivity = Constants.CameraSensitivity;
             cameraOption = 1;
-            offset = Constants.CameraSurfaceOffset;
             this.window = window;
         }
 
@@ -107,7 +102,7 @@ namespace Mapa
             heightFinal = (position.Z - topLeft.Z) * heightBottom + (bottomLeft.Z - position.Z) * heightTop;
 
 
-            position.Y = heightFinal + offset;
+            position.Y = heightFinal + Constants.CameraSurfaceOffset;
         }
 
         private void TankFollowUpdate(bool isFromBack)
@@ -133,11 +128,11 @@ namespace Mapa
 
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad7))
             {
-                position += speed * normal;
+                position += Constants.CameraMovementSpeed * normal;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad1))
             {
-                position -= speed * normal;
+                position -= Constants.CameraMovementSpeed * normal;
             }
         }
 
@@ -161,19 +156,19 @@ namespace Mapa
         {
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad4))
             {
-                position -= speed * directionSide;
+                position -= Constants.CameraMovementSpeed * directionSide;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad6))
             {
-                position += speed * directionSide;
+                position += Constants.CameraMovementSpeed * directionSide;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad8))
             {
-                position += speed * direction;
+                position += Constants.CameraMovementSpeed * direction;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.NumPad5))
             {
-                position -= speed * direction;
+                position -= Constants.CameraMovementSpeed * direction;
             }
 
             ResetMouse();
@@ -208,16 +203,16 @@ namespace Mapa
 
             if (mouseState != oldMouseState)
             {
-                yaw += MathHelper.ToRadians(-(mouseState.X - oldMouseState.X) * sensitivity);
-                pitch += MathHelper.ToRadians(-(mouseState.Y - oldMouseState.Y) * sensitivity);
+                yaw += MathHelper.ToRadians(-(mouseState.X - oldMouseState.X) * Constants.CameraSensitivity);
+                pitch += MathHelper.ToRadians(-(mouseState.Y - oldMouseState.Y) * Constants.CameraSensitivity);
             }
 
             /*oldMouseState = mouseState;
             mouseState = Mouse.GetState();
             if (mouseState != oldMouseState)
             {
-                yaw += MathHelper.ToRadians(-(mouseState.X - oldMouseState.X) * sensitivity);
-                pitch += MathHelper.ToRadians(-(mouseState.Y - oldMouseState.Y) * sensitivity);
+                yaw += MathHelper.ToRadians(-(mouseState.X - oldMouseState.X) * Constants.CameraSensitivity);
+                pitch += MathHelper.ToRadians(-(mouseState.Y - oldMouseState.Y) * Constants.CameraSensitivity);
 
                 Mouse.SetPosition(window.ClientBounds.Width / 2, window.ClientBounds.Height / 2);
 

@@ -12,17 +12,18 @@ namespace Mapa
 {
     public class Tanque
     {
+        ContentManager content;
         Camera camera;
         Model tank;
         ModelBone turretBone, cannonBone, rightFrontWheelBone, leftFrontWheelBone, rightBackWheelBone, leftBackWheelBone, hatchBone, leftSteerBone, rightSteerBone;
+        Matrix turretInitTransform, cannonInitTransform, rightFrontWheelInitTransform, leftFrontWheelInitTransform, rightBackWheelInitTransform, leftBackWheelInitTransform, hatchInitTransform, leftSteerBoneInitTransform, rightSteerBoneInitTransform;
         Matrix turretTransform, cannonTransform, rightFrontWheelTransform, leftFrontWheelTransform, rightBackWheelTransform, leftBackWheelTransform, hatchTransform, leftSteerBoneTransform, rightSteerBoneTransform;
         float turretAngle, cannonAngle;
         Matrix rotacao, translacao;
-        float scale, speed, rotSpeed, yaw;
-        float wheelRotationPitch;
+        float yaw, wheelRotationPitch;
         int playerNum;
-        Keys kForward, kRight, kLeft, kBackward;
-        private Vector3 tankForward, tankRight, tankNormal, origin, direction, cannonDirection;
+        Keys kForward, kRight, kLeft, kBackward, kShoot;
+        private Vector3 tankForward, tankRight, tankNormal, origin, direction, cannonDirection, turretForward;
 
         private Matrix tPos;
 
@@ -30,20 +31,21 @@ namespace Mapa
 
         Matrix[] boneTransforms;
 
-        public Tanque(ContentManager content, GraphicsDevice graphicsDevice, Camera camera, int playerNum, Vector3 posicaoInicial)
+        List<Projectile> projectiles;
+
+        public Tanque(ContentManager content, Camera camera, int playerNum, Vector3 posicaoInicial)
         {
+            this.content = content;
             this.playerNum = playerNum;
             this.camera = camera;
             tank = content.Load<Model>("tank");
-            scale = Constants.TankScale;
-            speed = Constants.TankMovSpeed;
-            rotSpeed = Constants.TankRotSpeed;
             translacao = Matrix.CreateTranslation(posicaoInicial);
             tPos = translacao;
             rotacao = Matrix.Identity;
             origin = Vector3.Forward;
             direction = origin;
             cannonDirection = origin;
+            turretForward = origin;
 
             wheelRotationPitch = 0f;
 
@@ -54,15 +56,18 @@ namespace Mapa
                     kRight = Keys.D;
                     kLeft = Keys.A;
                     kBackward = Keys.S;
+                    kShoot = Keys.F;
                     break;
                 case 2:
                     kForward = Keys.I;
                     kRight = Keys.L;
                     kLeft = Keys.J;
                     kBackward = Keys.K;
+                    kShoot = Keys.P;
                     break;
             }
 
+            #region ModelBones
             rightFrontWheelBone = tank.Bones["r_front_wheel_geo"];
             leftFrontWheelBone = tank.Bones["l_front_wheel_geo"];
             rightBackWheelBone = tank.Bones["r_back_wheel_geo"];
@@ -76,17 +81,29 @@ namespace Mapa
             turretAngle = 0.0f;
             cannonAngle = 0.0f;
 
+            turretInitTransform = turretBone.Transform;
             turretTransform = turretBone.Transform;
+            cannonInitTransform = cannonBone.Transform;
             cannonTransform = cannonBone.Transform;
+            leftSteerBoneInitTransform = leftSteerBone.Transform;
             leftSteerBoneTransform = leftSteerBone.Transform;
+            rightSteerBoneInitTransform = rightSteerBone.Transform;
             rightSteerBoneTransform = rightSteerBone.Transform;
+            rightFrontWheelInitTransform = rightFrontWheelBone.Transform;
             rightFrontWheelTransform = rightFrontWheelBone.Transform;
+            leftFrontWheelInitTransform = leftFrontWheelBone.Transform;
             leftFrontWheelTransform = leftFrontWheelBone.Transform;
+            rightBackWheelInitTransform = rightBackWheelBone.Transform;
             rightBackWheelTransform = rightBackWheelBone.Transform;
+            leftBackWheelInitTransform = leftBackWheelBone.Transform;
             leftBackWheelTransform = leftBackWheelBone.Transform;
+            hatchInitTransform = hatchBone.Transform;
             hatchTransform = hatchBone.Transform;
 
             boneTransforms = new Matrix[tank.Bones.Count];
+            #endregion
+
+            projectiles = new List<Projectile>();
         }
 
         public void Update()
@@ -96,9 +113,13 @@ namespace Mapa
             UpdateTankNormal();
             MoveCannonAndTurret();
 
-            tPos = Matrix.CreateScale(scale) * rotacao * translacao;
-            turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretTransform;
-            cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonTransform;
+            tPos = Matrix.CreateScale(Constants.TankScale) * rotacao * translacao;
+            turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretInitTransform;
+            cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonInitTransform;
+
+            Shoot();
+            foreach (Projectile p in projectiles)
+                p.Movement();
         }
 
         private float UpdateTankHeight()
@@ -122,7 +143,7 @@ namespace Mapa
             heightFinal = (position.Z - topLeft.Z) * heightBottom + (bottomLeft.Z - position.Z) * heightTop;
 
 
-             return heightFinal;
+            return heightFinal;
         }
 
         public void LoadMapNormalsPos(NormalPosition[,] a)
@@ -135,8 +156,7 @@ namespace Mapa
             NormalPosition topLeft, topRight, bottomLeft, bottomRight;
             float topLeftX, topLeftZ;
             Vector3 normalBottom, normalTop, normalFinal;
-            Vector3 position = tPos.Translation
-                ;
+            Vector3 position = tPos.Translation;
 
             topLeftX = (float)Math.Floor(position.X);
             topLeftZ = (float)Math.Floor(position.Z);
@@ -167,29 +187,29 @@ namespace Mapa
 
             if (Keyboard.GetState().IsKeyDown(kForward))
             {
-                position += speed * tankForward;
+                position += Constants.TankMovSpeed * tankForward;
                 MoveWheelsForward(true);
             }
             if (Keyboard.GetState().IsKeyDown(kBackward))
             {
-                position -= speed * tankForward;
+                position -= Constants.TankMovSpeed * tankForward;
                 MoveWheelsForward(false);
             }
 
             if (Keyboard.GetState().IsKeyDown(kRight))
             {
                 TurnFrontWheels(true);
-                yaw -= MathHelper.ToRadians(rotSpeed);
+                yaw -= MathHelper.ToRadians(Constants.TankRotSpeed);
             }
             else if (Keyboard.GetState().IsKeyDown(kLeft))
             {
                 TurnFrontWheels(false);
-                yaw += MathHelper.ToRadians(rotSpeed);
+                yaw += MathHelper.ToRadians(Constants.TankRotSpeed);
             }
             else
             {
-                leftSteerBone.Transform = leftSteerBoneTransform;
-                rightSteerBone.Transform = rightSteerBoneTransform;
+                leftSteerBoneTransform = leftSteerBoneInitTransform;
+                rightSteerBoneTransform = rightSteerBoneInitTransform;
             }
 
             Matrix rotationPlane = Matrix.CreateFromAxisAngle(tankNormal, yaw);
@@ -222,7 +242,6 @@ namespace Mapa
                 cannonAngle = -1.2f;
             if (cannonAngle > 0.5f)
                 cannonAngle = 0.5f;
-            Console.WriteLine(cannonAngle);
 
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
@@ -233,8 +252,19 @@ namespace Mapa
                 turretAngle += Constants.CannonRotSpeed;
             }
 
-            turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretTransform;
-            cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonTransform;
+            turretTransform = Matrix.CreateRotationY(turretAngle) * turretInitTransform;
+            cannonTransform = Matrix.CreateRotationX(cannonAngle) * cannonInitTransform;
+
+            cannonDirection = -Vector3.Transform(origin, Matrix.CreateFromYawPitchRoll(turretAngle, cannonAngle, 0.0f) * rotacao);
+            turretForward = Vector3.Transform(origin, Matrix.CreateRotationY(turretAngle));
+        }
+
+        private void Shoot()
+        {
+            if (Keyboard.GetState().IsKeyDown(kShoot))
+            {
+                projectiles.Add(new Projectile(content, camera, cannonDirection, (tPos.Translation - tankForward * 0.08f) + tankNormal * 0.65f + turretForward * 0.15f));
+            }
         }
 
         private void MoveWheelsForward(bool isGoingForward)
@@ -244,10 +274,10 @@ namespace Mapa
             else
                 wheelRotationPitch -= Constants.TankMovSpeed;
 
-            rightBackWheelBone.Transform = Matrix.CreateRotationX(wheelRotationPitch) * rightBackWheelTransform;
-            rightFrontWheelBone.Transform = Matrix.CreateRotationX(wheelRotationPitch) * rightFrontWheelTransform;
-            leftBackWheelBone.Transform = Matrix.CreateRotationX(wheelRotationPitch) * leftBackWheelTransform;
-            leftFrontWheelBone.Transform = Matrix.CreateRotationX(wheelRotationPitch) * leftFrontWheelTransform;
+            rightBackWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * rightBackWheelInitTransform;
+            rightFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * rightFrontWheelInitTransform;
+            leftBackWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftBackWheelInitTransform;
+            leftFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftFrontWheelInitTransform;
         }
 
         private void TurnFrontWheels(bool isTurningRight)
@@ -260,17 +290,23 @@ namespace Mapa
 
             wheelRotationPitch += Constants.TankMovSpeed;
 
-            leftSteerBone.Transform = Matrix.CreateRotationY(wheelTurn) * leftSteerBoneTransform;
-            rightSteerBone.Transform = Matrix.CreateRotationY(wheelTurn) * rightSteerBoneTransform;
+            leftSteerBoneTransform = Matrix.CreateRotationY(wheelTurn) * leftSteerBoneInitTransform;
+            rightSteerBoneTransform = Matrix.CreateRotationY(wheelTurn) * rightSteerBoneInitTransform;
 
-            rightBackWheelBone.Transform = Matrix.CreateRotationX(wheelRotationPitch) * rightBackWheelTransform;
-            rightFrontWheelBone.Transform = Matrix.CreateRotationX(wheelRotationPitch) * rightFrontWheelTransform;
-            leftBackWheelBone.Transform = Matrix.CreateRotationX(wheelRotationPitch) * leftBackWheelTransform;
-            leftFrontWheelBone.Transform = Matrix.CreateRotationX(wheelRotationPitch) * leftFrontWheelTransform;
+            rightBackWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * rightBackWheelInitTransform;
+            rightFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * rightFrontWheelInitTransform;
+            leftBackWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftBackWheelInitTransform;
+            leftFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftFrontWheelInitTransform;
         }
 
         public void Draw()
         {
+            rightBackWheelBone.Transform = rightBackWheelTransform;
+            rightFrontWheelBone.Transform = rightFrontWheelTransform;
+            leftBackWheelBone.Transform = leftBackWheelTransform;
+            leftFrontWheelBone.Transform = leftFrontWheelTransform;
+            leftSteerBone.Transform = leftSteerBoneTransform;
+            rightSteerBone.Transform = rightSteerBoneTransform;
             tank.Root.Transform = tPos;
             tank.CopyAbsoluteBoneTransformsTo(boneTransforms);
 
@@ -286,6 +322,9 @@ namespace Mapa
                 }
                 mesh.Draw();
             }
+
+            foreach (Projectile p in projectiles)
+                p.Draw();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Mapa
         //----------------ECRÃ----------------//
         public static Color ScreenColor = Color.CornflowerBlue; //new Color(160, 40, 0);
 
-        //----------------CAMERA----------------//
+        //----------------CÂMARA----------------//
         public static float CameraSurfaceOffset = 1.5f;
         public static float CameraMovementSpeed = 0.2f;
         public static float CameraSensitivity = 0.2f;
@@ -27,5 +27,8 @@ namespace Mapa
         public static float TankMovSpeed = 0.2f;
         public static float TankRotSpeed = 4f;
         public static float CannonRotSpeed = 0.02f;
+        public static float CannonBallSpeed = 0.4f;
+        public static float CannonBallDecay = 0.02f;
+        public static float CannonBallScale = 0.3f;
     }
 }

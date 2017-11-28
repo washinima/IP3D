@@ -10,7 +10,7 @@ namespace Mapa
 {
     public static class Lighting
     {
-        public static Vector3 Color = new Vector3(1f, 1f, 1f);
+        public static Vector3 Color = new Vector3(255f, 255f, 255f) / 255f;
         public static Vector3 Direction = new Vector3(1f, -0.5f, 0f);
         public static Vector3 Ambient = Color / 10f;
 

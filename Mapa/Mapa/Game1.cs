@@ -32,8 +32,8 @@ namespace Mapa
             mapa = new Map(Content, GraphicsDevice, camera);
             tanques = new List<Tanque>
             {
-                new Tanque(Content, GraphicsDevice, camera, 1, new Vector3(100f, 4f, 100f)),
-                new Tanque(Content, GraphicsDevice, camera, 2, new Vector3(100f, 4f, 98f))
+                new Tanque(Content, camera, 2, new Vector3(100f, 4f, 100f)),
+                new Tanque(Content, camera, 1, new Vector3(100f, 4f, 98f))
             };
             foreach (Tanque tanque in tanques)
                 tanque.LoadMapNormalsPos(mapa.normalPosition);
