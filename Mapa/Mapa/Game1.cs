@@ -11,6 +11,7 @@ namespace Mapa
         SpriteBatch spriteBatch;
         Map mapa;
         Camera camera;
+        private Collisions collisions;
         List<Tanque> tanques;
 
         public Game1()
@@ -38,6 +39,9 @@ namespace Mapa
             foreach (Tanque tanque in tanques)
                 tanque.LoadMapNormalsPos(mapa.normalPosition);
 
+            collisions = new Collisions(tanques);
+
+
             base.Initialize();
         }
 
@@ -63,6 +67,8 @@ namespace Mapa
             foreach (Tanque tanque in tanques)
                 tanque.Update();
 
+            collisions.TankCollisionUpdate();
+
             base.Update(gameTime);
         }
 
@@ -73,7 +79,7 @@ namespace Mapa
 
             mapa.Draw(GraphicsDevice);
             foreach (Tanque tanque in tanques)
-                tanque.Draw();
+                tanque.Draw(GraphicsDevice);
 
 
             base.Draw(gameTime);

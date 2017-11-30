@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace Mapa
 {
     public class Tanque
     {
+        #region VariableSet1
+
         ContentManager content;
         Camera camera;
         Model tank;
@@ -33,8 +36,20 @@ namespace Mapa
 
         List<Projectile> projectiles;
 
+        #endregion
+
+        private BoundingSphere _sphere;
+
+        public BoundingSphere Sphere
+        {
+            get{ return _sphere; }
+        }
+
+
         public Tanque(ContentManager content, Camera camera, int playerNum, Vector3 posicaoInicial)
         {
+            _sphere = new BoundingSphere(posicaoInicial, 0.6f);
+
             this.content = content;
             this.playerNum = playerNum;
             this.camera = camera;
@@ -125,6 +140,8 @@ namespace Mapa
                 else
                     projectiles[i].Movement();
             }
+
+            _sphere.Center = tPos.Translation;
         }
 
         private float UpdateTankHeight()
@@ -304,7 +321,7 @@ namespace Mapa
             leftFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftFrontWheelInitTransform;
         }
 
-        public void Draw()
+        public void Draw(GraphicsDevice device)
         {
             rightBackWheelBone.Transform = rightBackWheelTransform;
             rightFrontWheelBone.Transform = rightFrontWheelTransform;
@@ -330,6 +347,19 @@ namespace Mapa
 
             foreach (Projectile p in projectiles)
                 p.Draw();
+
+
+            VertexPositionColor[] a = new VertexPositionColor[2];
+            a[0] = new VertexPositionColor(_sphere.Center, Color.Red);
+            a[1] = new VertexPositionColor(_sphere.Center + tankForward, Color.Red);
+            
+            BasicEffect effecto = new BasicEffect(device);
+            effecto.VertexColorEnabled = true;
+            //Lighting.SetLight(effecto);
+
+            effecto.CurrentTechnique.Passes[0].Apply();
+            device.DrawUserPrimitives(PrimitiveType.LineList, a, 0, 1);
+
         }
     }
 }
