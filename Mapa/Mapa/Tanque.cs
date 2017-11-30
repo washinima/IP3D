@@ -118,8 +118,13 @@ namespace Mapa
             cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonInitTransform;
 
             Shoot();
-            foreach (Projectile p in projectiles)
-                p.Movement();
+            for (int i = projectiles.Count - 1; i >= 0; i--)
+            {
+                if (projectiles[i].IsDead())
+                    projectiles.Remove(projectiles[i]);
+                else
+                    projectiles[i].Movement();
+            }
         }
 
         private float UpdateTankHeight()
@@ -256,14 +261,14 @@ namespace Mapa
             cannonTransform = Matrix.CreateRotationX(cannonAngle) * cannonInitTransform;
 
             cannonDirection = -Vector3.Transform(origin, Matrix.CreateFromYawPitchRoll(turretAngle, cannonAngle, 0.0f) * rotacao);
-            turretForward = Vector3.Transform(origin, Matrix.CreateRotationY(turretAngle));
+            turretForward = Vector3.Transform(origin, Matrix.CreateFromAxisAngle((tPos.Translation - tankForward * 0.1f + tankNormal) - (tPos.Translation - tankForward * 0.1f), turretAngle));
         }
 
         private void Shoot()
         {
             if (Keyboard.GetState().IsKeyDown(kShoot))
             {
-                projectiles.Add(new Projectile(content, camera, cannonDirection, (tPos.Translation - tankForward * 0.08f) + tankNormal * 0.65f + turretForward * 0.15f));
+                projectiles.Add(new Projectile(content, camera, cannonDirection, (tPos.Translation - tankForward * 0.1f) + tankNormal * 0.65f + turretForward * 0.25f));
             }
         }
 

@@ -31,6 +31,16 @@ namespace Mapa
             direction.Y -= Constants.CannonBallDecay;
         }
 
+        public bool IsDead()
+        {
+            if (position.Y < 0.0f)
+            {
+                return true;
+            }
+            else
+                return false;
+        }
+
         public void Draw()
         {
             ball.Root.Transform = Matrix.CreateScale(Constants.CannonBallScale) * Matrix.CreateTranslation(position);
