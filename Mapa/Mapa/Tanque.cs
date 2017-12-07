@@ -62,22 +62,12 @@ namespace Mapa
             get { return projectiles; }
         }
 
-        public Vector3 Position
-        {
-            get { return tPos.Translation; }
-            set { tPos.Translation = value; }
-        }
-
         SistemaDeParticulas sistemaDeParticulas;
 
         public Tanque(ContentManager content, Camera camera, int playerNum, Vector3 posicaoInicial)
         {
-<<<<<<< HEAD
-            _sphere = new BoundingSphere(posicaoInicial, 0.6f);
             sistemaDeParticulas = new SistemaDeParticulas();
-=======
             _r = 0.6f;
->>>>>>> master
 
             this.content = content;
             this.playerNum = playerNum;
@@ -169,13 +159,10 @@ namespace Mapa
                 else
                     projectiles[i].Movement();
             }
-<<<<<<< HEAD
 
-            _sphere.Center = tPos.Translation;
 
             sistemaDeParticulas.Update(this);
-=======
->>>>>>> master
+
         }
 
         private float UpdateTankHeight()
@@ -382,22 +369,7 @@ namespace Mapa
             foreach (Projectile p in projectiles)
                 p.Draw();
 
-<<<<<<< HEAD
             sistemaDeParticulas.Draw(device, camera);
-=======
-            /*
-            VertexPositionColor[] a = new VertexPositionColor[2];
-            a[0] = new VertexPositionColor(_sphere.Center, Color.Red);
-            a[1] = new VertexPositionColor(_sphere.Center + tankForward, Color.Red);
-            
-            BasicEffect effecto = new BasicEffect(device);
-            effecto.VertexColorEnabled = true;
-            //Lighting.SetLight(effecto);
-
-            effecto.CurrentTechnique.Passes[0].Apply();
-            device.DrawUserPrimitives(PrimitiveType.LineList, a, 0, 1);*/
-
->>>>>>> master
         }
     }
 }
