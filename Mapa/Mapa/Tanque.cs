@@ -38,17 +38,34 @@ namespace Mapa
 
         #endregion
 
-        private BoundingSphere _sphere;
+        private float _r;
+        private Vector3 oldPosition;
 
-        public BoundingSphere Sphere
+        public float Raio
         {
-            get{ return _sphere; }
+            get{ return _r; }
+        }
+
+        public Vector3 Position
+        {
+            get { return tPos.Translation; }
+            set { tPos.Translation = value; }
+        }
+
+        public Vector3 OldPosition
+        {
+            get { return oldPosition; }
+        }
+
+        public List<Projectile> Projectiles
+        {
+            get { return projectiles; }
         }
 
 
         public Tanque(ContentManager content, Camera camera, int playerNum, Vector3 posicaoInicial)
         {
-            _sphere = new BoundingSphere(posicaoInicial, 0.6f);
+            _r = 0.6f;
 
             this.content = content;
             this.playerNum = playerNum;
@@ -140,8 +157,6 @@ namespace Mapa
                 else
                     projectiles[i].Movement();
             }
-
-            _sphere.Center = tPos.Translation;
         }
 
         private float UpdateTankHeight()
@@ -204,7 +219,7 @@ namespace Mapa
 
         private Vector3 Movement()
         {
-            Vector3 oldPosition = tPos.Translation;
+            oldPosition = tPos.Translation;
             Vector3 position = tPos.Translation;
 
             if (Keyboard.GetState().IsKeyDown(kForward))
@@ -348,7 +363,7 @@ namespace Mapa
             foreach (Projectile p in projectiles)
                 p.Draw();
 
-
+            /*
             VertexPositionColor[] a = new VertexPositionColor[2];
             a[0] = new VertexPositionColor(_sphere.Center, Color.Red);
             a[1] = new VertexPositionColor(_sphere.Center + tankForward, Color.Red);
@@ -358,7 +373,7 @@ namespace Mapa
             //Lighting.SetLight(effecto);
 
             effecto.CurrentTechnique.Passes[0].Apply();
-            device.DrawUserPrimitives(PrimitiveType.LineList, a, 0, 1);
+            device.DrawUserPrimitives(PrimitiveType.LineList, a, 0, 1);*/
 
         }
     }

@@ -9,12 +9,26 @@ using System.Threading.Tasks;
 
 namespace Mapa
 {
-    class Projectile
+    public class Projectile
     {
         public Model ball;
         public Vector3 position, direction;
         Camera camera;
         public Matrix[] boneTransforms;
+
+        private float _raio;
+        private bool _isDead;
+
+        public float Raio
+        {
+            get { return _raio; }
+        }
+
+        public bool Dead
+        {
+            get { return _isDead; }
+            set { _isDead = value; }
+        }
 
         public Projectile(ContentManager content, Camera camera, Vector3 initialDirection, Vector3 initialPosition)
         {
@@ -23,6 +37,7 @@ namespace Mapa
             this.camera = camera;
             position = initialPosition;
             direction = initialDirection;
+            _raio = 0.01f;
         }
 
         public void Movement()
@@ -35,10 +50,12 @@ namespace Mapa
         {
             if (position.Y < 0.0f)
             {
-                return true;
+                _isDead = true;
             }
             else
-                return false;
+                _isDead = false;
+
+            return _isDead;
         }
 
         public void Draw()

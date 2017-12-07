@@ -67,7 +67,7 @@ namespace Mapa
             foreach (Tanque tanque in tanques)
                 tanque.Update();
 
-            collisions.TankCollisionUpdate();
+            collisions.Update();
 
             base.Update(gameTime);
         }
