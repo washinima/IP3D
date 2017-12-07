@@ -38,11 +38,28 @@ namespace Mapa
 
         #endregion
 
-        private BoundingSphere _sphere;
+        private float _r;
+        private Vector3 oldPosition;
 
-        public BoundingSphere Sphere
+        public float Raio
         {
-            get{ return _sphere; }
+            get{ return _r; }
+        }
+
+        public Vector3 Position
+        {
+            get { return tPos.Translation; }
+            set { tPos.Translation = value; }
+        }
+
+        public Vector3 OldPosition
+        {
+            get { return oldPosition; }
+        }
+
+        public List<Projectile> Projectiles
+        {
+            get { return projectiles; }
         }
 
         public Vector3 Position
@@ -55,8 +72,12 @@ namespace Mapa
 
         public Tanque(ContentManager content, Camera camera, int playerNum, Vector3 posicaoInicial)
         {
+<<<<<<< HEAD
             _sphere = new BoundingSphere(posicaoInicial, 0.6f);
             sistemaDeParticulas = new SistemaDeParticulas();
+=======
+            _r = 0.6f;
+>>>>>>> master
 
             this.content = content;
             this.playerNum = playerNum;
@@ -148,10 +169,13 @@ namespace Mapa
                 else
                     projectiles[i].Movement();
             }
+<<<<<<< HEAD
 
             _sphere.Center = tPos.Translation;
 
             sistemaDeParticulas.Update(this);
+=======
+>>>>>>> master
         }
 
         private float UpdateTankHeight()
@@ -214,7 +238,7 @@ namespace Mapa
 
         private Vector3 Movement()
         {
-            Vector3 oldPosition = tPos.Translation;
+            oldPosition = tPos.Translation;
             Vector3 position = tPos.Translation;
 
             if (Keyboard.GetState().IsKeyDown(kForward))
@@ -358,7 +382,22 @@ namespace Mapa
             foreach (Projectile p in projectiles)
                 p.Draw();
 
+<<<<<<< HEAD
             sistemaDeParticulas.Draw(device, camera);
+=======
+            /*
+            VertexPositionColor[] a = new VertexPositionColor[2];
+            a[0] = new VertexPositionColor(_sphere.Center, Color.Red);
+            a[1] = new VertexPositionColor(_sphere.Center + tankForward, Color.Red);
+            
+            BasicEffect effecto = new BasicEffect(device);
+            effecto.VertexColorEnabled = true;
+            //Lighting.SetLight(effecto);
+
+            effecto.CurrentTechnique.Passes[0].Apply();
+            device.DrawUserPrimitives(PrimitiveType.LineList, a, 0, 1);*/
+
+>>>>>>> master
         }
     }
 }

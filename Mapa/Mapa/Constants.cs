@@ -24,8 +24,8 @@ namespace Mapa
 
         //----------------TANQUE----------------//
         public static float TankScale = 0.002f;
-        public static float TankMovSpeed = 0.2f;
-        public static float TankRotSpeed = 4f;
+        public static float TankMovSpeed = 0.01f;
+        public static float TankRotSpeed = 2f;
         public static float CannonRotSpeed = 0.02f;
         public static float CannonBallSpeed = 0.4f;
         public static float CannonBallDecay = 0.02f;
