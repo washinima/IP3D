@@ -27,11 +27,12 @@ namespace Mapa
         VertexPositionNormalTexture[] vertexes;
         ushort[] indexes;
         Camera camera;
-
+        private GraphicsDevice device;
         public NormalPosition[,] normalPosition;
 
         public Map(ContentManager content, GraphicsDevice graphicsDevice, Camera camera)
         {
+            this.device = graphicsDevice;
             worldMatrix = Matrix.Identity;
             alturas = content.Load<Texture2D>("lh3d1");
             textura = content.Load<Texture2D>("grass");
@@ -70,8 +71,9 @@ namespace Mapa
                     vertexes[z * w + x] = new VertexPositionNormalTexture(new Vector3(x, y, z), Vector3.Up, new Vector2(x % 2, z % 2));
                 }
             }
-            camera.LoadHeights(normalPosition);
+            
             CalculateNormals();
+            camera.LoadHeights(normalPosition);
 
             vertexBuffer = new VertexBuffer(graphicsDevice, typeof(VertexPositionNormalTexture), vertexes.Length, BufferUsage.None);
             vertexBuffer.SetData(vertexes);
@@ -90,6 +92,44 @@ namespace Mapa
             indexBuffer = new IndexBuffer(graphicsDevice, typeof(ushort), indexes.Length, BufferUsage.None);
             indexBuffer.SetData(indexes);
         }
+
+        private void UpdateMap(GraphicsDevice graphicsDevice)
+        {
+            Color[] texels = new Color[w * h];
+            vertexes = new VertexPositionNormalTexture[w * h];
+            alturas.GetData<Color>(texels);
+
+            for (int z = 0; z < h; z++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    //float y = (texels[z * w + x].R * scale);
+                    float y = normalPosition[x, z].pos.Y;
+                    vertexes[z * w + x] = new VertexPositionNormalTexture(new Vector3(x, y, z), Vector3.Up, new Vector2(x % 2, z % 2));
+                }
+            }
+            
+            CalculateNormals();
+            camera.LoadHeights(normalPosition);
+
+            vertexBuffer = new VertexBuffer(graphicsDevice, typeof(VertexPositionNormalTexture), vertexes.Length, BufferUsage.None);
+            vertexBuffer.SetData(vertexes);
+
+            indexes = new ushort[h * 2 * (w - 1)];
+
+            for (int ix = 0; ix < w - 1; ix++)
+            {
+                for (int iz = 0; iz < h; iz++)
+                {
+                    indexes[2 * iz + 0 + ix * 2 * h] = (ushort)(iz * w + ix);
+                    indexes[2 * iz + 1 + ix * 2 * h] = (ushort)(iz * w + 1 + ix);
+                }
+            }
+
+            indexBuffer = new IndexBuffer(graphicsDevice, typeof(ushort), indexes.Length, BufferUsage.None);
+            indexBuffer.SetData(indexes);
+        }
+
 
         private void CalculateNormals()
         {
@@ -188,6 +228,16 @@ namespace Mapa
                     normalPosition[x, z].pos = vertexes[z * w + x].Position;
                 }
             }
+        }
+
+        public void Update()
+        {
+            if (Constants.isDestroyed)
+            {
+                UpdateMap(device);
+                Constants.isDestroyed = false;
+            }
+
         }
 
         public void Draw(GraphicsDevice graphicsDevice)

@@ -71,6 +71,7 @@ namespace Mapa
                 tanque.Update();
 
             collisions.Update();
+            mapa.Update();
 
             base.Update(gameTime);
         }

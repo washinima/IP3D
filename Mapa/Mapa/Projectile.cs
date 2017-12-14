@@ -49,20 +49,55 @@ namespace Mapa
             position += direction * Constants.CannonBallSpeed;
             direction.Y -= Constants.CannonBallDecay;
 
-
         }
 
-        public bool IsDead()
+        public bool IsDead(NormalPosition[,] normalPositions)
         {
-            if (position.Y < 0.0f)
+            if (position.Y < MapHeight(normalPositions))
             {
                 _isDead = true;
+                MapDestruction(normalPositions);
+                Constants.isDestroyed = true;
             }
             else
                 _isDead = false;
 
             return _isDead;
         }
+
+        private void MapDestruction(NormalPosition[,] normalPositions)
+        {
+            float topLeftX = (float)Math.Floor(position.X);
+            float topLeftZ = (float)Math.Floor(position.Z);
+            normalPositions[(int) topLeftX, (int) topLeftZ].pos.Y -= Constants.Destruction;
+            normalPositions[(int)topLeftX + 1, (int)topLeftZ].pos.Y -= Constants.Destruction;
+            normalPositions[(int)topLeftX, (int)topLeftZ + 1].pos.Y -= Constants.Destruction;
+            normalPositions[(int)topLeftX + 1, (int)topLeftZ + 1].pos.Y -= Constants.Destruction;
+        }
+
+
+        private float MapHeight(NormalPosition[,] normalPositions )
+        {
+            Vector3 topLeft, topRight, bottomLeft, bottomRight;
+            float topLeftX, topLeftZ;
+            float heightBottom, heightTop, heightFinal;
+
+            topLeftX = (float)Math.Floor(position.X);
+            topLeftZ = (float)Math.Floor(position.Z);
+
+            topLeft = new Vector3(topLeftX, normalPositions[(int)topLeftX, (int)topLeftZ].pos.Y, topLeftZ);
+            topRight = new Vector3(topLeft.X + 1, normalPositions[(int)topLeftX + 1, (int)topLeftZ].pos.Y, topLeft.Z);
+            bottomLeft = new Vector3(topLeft.X, normalPositions[(int)topLeftX, (int)topLeftZ + 1].pos.Y, topLeft.Z + 1);
+            bottomRight = new Vector3(topLeft.X + 1, normalPositions[(int)topLeftX + 1, (int)topLeftZ + 1].pos.Y, topLeft.Z + 1);
+
+            heightTop = (position.X - topLeft.X) * topRight.Y + (topRight.X - position.X) * topLeft.Y;
+            heightBottom = (position.X - bottomLeft.X) * bottomRight.Y + (bottomRight.X - position.X) * bottomLeft.Y;
+            heightFinal = (position.Z - topLeft.Z) * heightBottom + (bottomLeft.Z - position.Z) * heightTop;
+
+
+            return heightFinal;
+        }
+
 
         public void Draw()
         {

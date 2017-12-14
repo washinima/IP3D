@@ -21,6 +21,8 @@ namespace Mapa
 
         //----------------MAPA----------------//
         public static float MapHeightScale = 0.025f;
+        public static float Destruction = 0.15f;
+        public static bool isDestroyed = false;
 
         //----------------TANQUE----------------//
         public static float TankScale = 0.002f;
@@ -31,7 +33,7 @@ namespace Mapa
         public static float CannonBallSpeed = 0.6f;
         public static float CannonBallDecay = 0.02f;
         public static float CannonBallScale = 0.3f;
-        public static float ShootCooldown = 1f;
+        public static float ShootCooldown = 0.5f;
 
 
         public static double LengthOfVector3(Vector3 v)

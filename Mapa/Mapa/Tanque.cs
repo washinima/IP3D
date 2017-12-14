@@ -175,7 +175,7 @@ namespace Mapa
                     Shoot();
                 for (int i = projectiles.Count - 1; i >= 0; i--)
                 {
-                    if (projectiles[i].IsDead())
+                    if (projectiles[i].IsDead(normalPositions))
                         projectiles.Remove(projectiles[i]);
                     else
                         projectiles[i].Movement();
