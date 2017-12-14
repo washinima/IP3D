@@ -182,10 +182,10 @@ namespace Mapa
                 }
                 sistemaDeParticulas.Update(this);
             }
-
+            
             else //AI Tank
             {
-                if (true)//Constants.LengthOfVector3(tanques[1].Position - Position) > 5f)
+                if (false)//Constants.LengthOfVector3(tanques[1].Position - Position) > 5f)
                 {
                     Vector3 target = WanderBehaviour();
                     SeekBehaviour(target);
@@ -200,6 +200,7 @@ namespace Mapa
                 tPos = Matrix.CreateScale(Constants.TankScale) * rotacao * translacao;
                 sistemaDeParticulas.Update(this);
             }
+            
         }
 
         private float UpdateTankHeight()

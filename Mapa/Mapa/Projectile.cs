@@ -16,7 +16,7 @@ namespace Mapa
         Camera camera;
         public Matrix[] boneTransforms;
 
-        public Vector3 _oldPos, _disTravelled;
+        public Vector3 _oldPos;
 
         private float _raio;
         private bool _isDead;
@@ -48,8 +48,6 @@ namespace Mapa
                 
             position += direction * Constants.CannonBallSpeed;
             direction.Y -= Constants.CannonBallDecay;
-
-            _disTravelled = position - _oldPos;
 
 
         }

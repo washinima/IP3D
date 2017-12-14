@@ -59,6 +59,20 @@ namespace Mapa
             }
         }
 
+        private Vector3 AbsDist(Vector3 a, Vector3 b)
+        {
+            Vector3 tmp = b - a;
+
+            tmp = new Vector3(
+                Math.Abs(tmp.X),
+                Math.Abs(tmp.Y),
+                Math.Abs(tmp.Z)
+            );
+
+            return tmp;
+        }
+
+
         private void BulletCollisionUpdateHelper(Tanque a, Tanque b)
         {
             List<Projectile> _bullets = a.Projectiles;
@@ -66,18 +80,59 @@ namespace Mapa
             for (int i = 0; i <= _bullets.Count - 1; i++)
             {
                 float somaRadio = b.Raio + _bullets[i].Raio;
-                Vector3 prediction = _bullets[i].position + _bullets[i].direction;
 
-                Vector3 lineCast = b.Position - _bullets[i]._disTravelled;
+                Vector3 AB = AbsDist(_bullets[i]._oldPos, _bullets[i].position);
+                double ab = Constants.LengthOfVector3(AB);
 
-                lineCast = new Vector3(
-                    Math.Abs(lineCast.X),
-                    Math.Abs(lineCast.Y),
-                    Math.Abs(lineCast.Z)
+
+                Vector3 AC = AbsDist(_bullets[i]._oldPos, b.Position);
+                double ac = Constants.LengthOfVector3(AC);
+
+                Vector3 CB = AbsDist(_bullets[i].position, b.Position);
+                double cb = Constants.LengthOfVector3(CB);
+
+                double areaRectangle = ab + ac + cb;
+                double sp = areaRectangle / 2;
+
+                double areaTri = Math.Sqrt(
+                    sp * (sp - ab) * (sp - ac) * (sp - cb)
                 );
 
+                double distance = 2 * areaTri / ab;
+
+
+                /*double angle = Math.Acos(
+                                   AB.X * AC.X + AB.Y * AC.Y +
+                                   AB.Z * AC.Z / 
+                                   (Constants.LengthOfVector3(AB) * Constants.LengthOfVector3(AC))
+                               );
+                               */
+
                 
-                Vector3 distEntreObj = b.Position - prediction;
+
+                //double angle = Math.Acos(Vector3.Dot(AB, AC));
+
+                
+                /* Se dot for positivo o angulo e agudo
+                 * Se for 0 e perpendicular
+                 * Se for negativo e obtuso
+                 */
+                float dot = Vector3.Dot(  
+                    _bullets[i].position - _bullets[i]._oldPos,
+                    b.Position - _bullets[i]._oldPos 
+                );
+
+                if (distance < somaRadio && dot > 0)
+                {
+                    hit++;
+                    Debug.WriteLine("HIT " + hit);
+                    _bullets[i].Dead = true;    
+                }
+
+                
+
+
+                /*Vector3 distEntreObj = b.Position - prediction;
                 distEntreObj = new Vector3(
                     Math.Abs(distEntreObj.X),
                     Math.Abs(distEntreObj.Y),
@@ -92,7 +147,7 @@ namespace Mapa
                         Debug.WriteLine("HIT " + hit);
                         _bullets[i].Dead = true;
                     }
-                }
+                }*/
             }
         }
 
