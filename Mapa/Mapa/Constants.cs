@@ -24,11 +24,19 @@ namespace Mapa
 
         //----------------TANQUE----------------//
         public static float TankScale = 0.002f;
-        public static float TankMovSpeed = 0.01f;
+        public static float TankMovSpeed = 0.03f;
         public static float TankRotSpeed = 2f;
-        public static float CannonRotSpeed = 0.02f;
-        public static float CannonBallSpeed = 0.4f;
+        public static float TankWheelSpinSpeed = 0.06f;
+        public static float CannonRotSpeed = 0.03f;
+        public static float CannonBallSpeed = 0.6f;
         public static float CannonBallDecay = 0.02f;
         public static float CannonBallScale = 0.3f;
+        public static float ShootCooldown = 1f;
+
+
+        public static double LengthOfVector3(Vector3 v)
+        {
+            return Math.Abs(Math.Sqrt(Math.Pow(v.X, 2) + Math.Pow(v.Y, 2) + Math.Pow(v.Z, 2)));
+        }
     }
 }

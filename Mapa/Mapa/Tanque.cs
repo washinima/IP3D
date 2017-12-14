@@ -25,7 +25,7 @@ namespace Mapa
         public Matrix rotacao, translacao;
         float yaw, wheelRotationPitch;
         int playerNum;
-        Keys kForward, kRight, kLeft, kBackward, kShoot;
+        Keys kForward, kRight, kLeft, kBackward, kShoot, kCannonUp, kCannonDown, kCannonRight, kCannonLeft;
         private Vector3 tankForward, tankRight, tankNormal, origin, direction, cannonDirection, turretForward;
 
         private Matrix tPos;
@@ -37,6 +37,10 @@ namespace Mapa
         List<Projectile> projectiles;
 
         #endregion
+
+        #region VariableSet2
+        double shootTime;
+        private Vector3 vel;
 
         private float _r;
         private Vector3 oldPosition;
@@ -62,12 +66,19 @@ namespace Mapa
             get { return projectiles; }
         }
 
+        public List<Tanque> tanques;
         SistemaDeParticulas sistemaDeParticulas;
+        Random random;
+        #endregion
 
-        public Tanque(ContentManager content, Camera camera, int playerNum, Vector3 posicaoInicial)
+        public Tanque(ContentManager content, Camera camera, int playerNum, Vector3 posicaoInicial, List<Tanque> tanques)
         {
+            this.tanques = tanques;
             sistemaDeParticulas = new SistemaDeParticulas();
             _r = 0.6f;
+            shootTime = 1f;
+            vel = Vector3.Zero;
+            random = new Random();
 
             this.content = content;
             this.playerNum = playerNum;
@@ -90,14 +101,22 @@ namespace Mapa
                     kRight = Keys.D;
                     kLeft = Keys.A;
                     kBackward = Keys.S;
-                    kShoot = Keys.F;
+                    kShoot = Keys.E;
+                    kCannonUp = Keys.T;
+                    kCannonDown = Keys.G;
+                    kCannonLeft = Keys.F;
+                    kCannonRight = Keys.H;
                     break;
                 case 2:
                     kForward = Keys.I;
                     kRight = Keys.L;
                     kLeft = Keys.J;
                     kBackward = Keys.K;
-                    kShoot = Keys.P;
+                    kShoot = Keys.O;
+                    kCannonUp = Keys.Up;
+                    kCannonDown = Keys.Down;
+                    kCannonLeft = Keys.Left;
+                    kCannonRight = Keys.Right;
                     break;
             }
 
@@ -142,27 +161,45 @@ namespace Mapa
 
         public void Update()
         {
-            translacao = Matrix.CreateTranslation(Movement());
-
-            UpdateTankNormal();
-            MoveCannonAndTurret();
-
-            tPos = Matrix.CreateScale(Constants.TankScale) * rotacao * translacao;
-            turretBone.Transform = Matrix.CreateRotationY(turretAngle) * turretInitTransform;
-            cannonBone.Transform = Matrix.CreateRotationX(cannonAngle) * cannonInitTransform;
-
-            Shoot();
-            for (int i = projectiles.Count - 1; i >= 0; i--)
+            if (playerNum != 0) //Controllable Tank
             {
-                if (projectiles[i].IsDead())
-                    projectiles.Remove(projectiles[i]);
-                else
-                    projectiles[i].Movement();
+                shootTime += 1f / 60f;
+                translacao = Matrix.CreateTranslation(Movement());
+
+                UpdateTankNormal();
+                MoveCannonAndTurret();
+
+                tPos = Matrix.CreateScale(Constants.TankScale) * rotacao * translacao;
+
+                if (Keyboard.GetState().IsKeyDown(kShoot) && shootTime >= Constants.ShootCooldown)
+                    Shoot();
+                for (int i = projectiles.Count - 1; i >= 0; i--)
+                {
+                    if (projectiles[i].IsDead())
+                        projectiles.Remove(projectiles[i]);
+                    else
+                        projectiles[i].Movement();
+                }
+                sistemaDeParticulas.Update(this);
             }
 
+            else //AI Tank
+            {
+                if (true)//Constants.LengthOfVector3(tanques[1].Position - Position) > 5f)
+                {
+                    Vector3 target = WanderBehaviour();
+                    SeekBehaviour(target);
+                    translacao.Translation += vel;
+                    sistemaDeParticulas.AddDust(this, true);
+                    direction = Vector3.Normalize(vel);
+                }
 
-            sistemaDeParticulas.Update(this);
-
+                translacao = Matrix.CreateTranslation(new Vector3(translacao.Translation.X, UpdateTankHeight(), translacao.Translation.Z));
+                UpdateTankNormal();
+                
+                tPos = Matrix.CreateScale(Constants.TankScale) * rotacao * translacao;
+                sistemaDeParticulas.Update(this);
+            }
         }
 
         private float UpdateTankHeight()
@@ -230,6 +267,7 @@ namespace Mapa
 
             if (Keyboard.GetState().IsKeyDown(kForward))
             {
+                sistemaDeParticulas.AddDust(this, true);
                 position += Constants.TankMovSpeed * tankForward;
                 MoveWheelsForward(true);
             }
@@ -237,6 +275,7 @@ namespace Mapa
             {
                 position -= Constants.TankMovSpeed * tankForward;
                 MoveWheelsForward(false);
+                sistemaDeParticulas.AddDust(this, false);
             }
 
             if (Keyboard.GetState().IsKeyDown(kRight))
@@ -272,11 +311,11 @@ namespace Mapa
 
         private void MoveCannonAndTurret()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            if (Keyboard.GetState().IsKeyDown(kCannonUp))
             {
                 cannonAngle -= Constants.CannonRotSpeed;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            if (Keyboard.GetState().IsKeyDown(kCannonDown))
             {
                 cannonAngle += Constants.CannonRotSpeed;
             }
@@ -286,11 +325,11 @@ namespace Mapa
             if (cannonAngle > 0.5f)
                 cannonAngle = 0.5f;
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            if (Keyboard.GetState().IsKeyDown(kCannonRight))
             {
                 turretAngle -= Constants.CannonRotSpeed;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            if (Keyboard.GetState().IsKeyDown(kCannonLeft))
             {
                 turretAngle += Constants.CannonRotSpeed;
             }
@@ -299,23 +338,21 @@ namespace Mapa
             cannonTransform = Matrix.CreateRotationX(cannonAngle) * cannonInitTransform;
 
             cannonDirection = -Vector3.Transform(origin, Matrix.CreateFromYawPitchRoll(turretAngle, cannonAngle, 0.0f) * rotacao);
-            turretForward = Vector3.Transform(origin, Matrix.CreateFromAxisAngle((tPos.Translation - tankForward * 0.1f + tankNormal) - (tPos.Translation - tankForward * 0.1f), turretAngle));
+            turretForward = Vector3.Transform(origin, Matrix.CreateFromAxisAngle(tankNormal, turretAngle) * rotacao) ;
         }
 
         private void Shoot()
         {
-            if (Keyboard.GetState().IsKeyDown(kShoot))
-            {
-                projectiles.Add(new Projectile(content, camera, cannonDirection, (tPos.Translation - tankForward * 0.1f) + tankNormal * 0.65f + turretForward * 0.25f));
-            }
+            shootTime = 0.0f;
+            projectiles.Add(new Projectile(content, camera, cannonDirection, (tPos.Translation - tankForward * 0.1f) + tankNormal * 0.65f + turretForward * -0.25f));
         }
 
         private void MoveWheelsForward(bool isGoingForward)
         {
             if (isGoingForward)
-                wheelRotationPitch += Constants.TankMovSpeed;
+                wheelRotationPitch += Constants.TankWheelSpinSpeed;
             else
-                wheelRotationPitch -= Constants.TankMovSpeed;
+                wheelRotationPitch -= Constants.TankWheelSpinSpeed;
 
             rightBackWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * rightBackWheelInitTransform;
             rightFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * rightFrontWheelInitTransform;
@@ -331,7 +368,7 @@ namespace Mapa
             else
                 wheelTurn = MathHelper.ToRadians(30f);
 
-            wheelRotationPitch += Constants.TankMovSpeed;
+            wheelRotationPitch += Constants.TankWheelSpinSpeed;
 
             leftSteerBoneTransform = Matrix.CreateRotationY(wheelTurn) * leftSteerBoneInitTransform;
             rightSteerBoneTransform = Matrix.CreateRotationY(wheelTurn) * rightSteerBoneInitTransform;
@@ -342,6 +379,26 @@ namespace Mapa
             leftFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftFrontWheelInitTransform;
         }
 
+        private Vector3 WanderBehaviour()
+        {
+            Vector3 target, centro;
+            centro = Position + direction * 26f;
+            float raio = 25f;
+            float angle = MathHelper.ToRadians(random.Next(0, 359));
+            Console.WriteLine(angle + ", " + centro);
+
+            target = new Vector3(centro.X + raio * (float)Math.Cos(angle), 0.0f, centro.Z + raio * -(float)Math.Sin(angle));
+
+            return target;
+        }
+
+        private void SeekBehaviour(Vector3 target)
+        {
+            Vector3 vSeek = Vector3.Normalize(target - Position);
+            Vector3 acceleration = Vector3.Normalize(vSeek - vel) * 0.001f;
+            vel = Vector3.Normalize(vel + acceleration) * Constants.TankMovSpeed;
+        }
+
         public void Draw(GraphicsDevice device)
         {
             rightBackWheelBone.Transform = rightBackWheelTransform;
@@ -350,6 +407,8 @@ namespace Mapa
             leftFrontWheelBone.Transform = leftFrontWheelTransform;
             leftSteerBone.Transform = leftSteerBoneTransform;
             rightSteerBone.Transform = rightSteerBoneTransform;
+            turretBone.Transform = turretTransform;
+            cannonBone.Transform = cannonTransform;
             tank.Root.Transform = tPos;
             tank.CopyAbsoluteBoneTransformsTo(boneTransforms);
 

@@ -23,14 +23,26 @@ namespace Mapa
 
         public void Update(Tanque tanque)
         {
-            dust.Add(new ParticleDust(tanque.Position, tanque.rotacao.Forward + tanque.rotacao.Up, random));
-            //dust.Add(new ParticleDust(tanque.Position, tanque.rotacao.Backward, random));
             for (int i = dust.Count - 1; i >= 0; i--)
             {
                 if (dust[i].position.Y <= 0f)
                     dust.Remove(dust[i]);
                 else
                     dust[i].Life();
+            }
+        }
+
+        public void AddDust(Tanque tanque, bool goingForward)
+        {
+            if (goingForward)
+            {
+                dust.Add(new ParticleDust(tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Right * 0.4f, tanque.rotacao.Forward + tanque.rotacao.Up * 0.3f, random, tanque.rotacao));
+                dust.Add(new ParticleDust(tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Left * 0.4f, tanque.rotacao.Forward + tanque.rotacao.Up * 0.3f, random, tanque.rotacao));
+            }
+            else
+            {
+                dust.Add(new ParticleDust(tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Right * 0.4f, tanque.rotacao.Backward + tanque.rotacao.Up * 0.3f, random, tanque.rotacao));
+                dust.Add(new ParticleDust(tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Left * 0.4f, tanque.rotacao.Backward + tanque.rotacao.Up * 0.3f, random, tanque.rotacao));
             }
         }
 
@@ -42,14 +54,18 @@ namespace Mapa
                 View = camera.GetViewMatrix(),
                 Projection = camera.GetProjection()
             };
+            Lighting.SetLight(effect);
 
             effect.CurrentTechnique.Passes[0].Apply();
 
             foreach (ParticleDust p in dust)
             {
-                device.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 8, p.cubeIndexes, 0, 3);
-                device.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 8, p.cubeIndexes, 5, 8);
-                device.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 8, p.cubeIndexes, 15, 3);
+                device.DrawUserIndexedPrimitives<VertexPositionColorNormal>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 24, p.cubeIndexes, 0, 3);
+                device.DrawUserIndexedPrimitives<VertexPositionColorNormal>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 24, p.cubeIndexes, 5, 2);
+                device.DrawUserIndexedPrimitives<VertexPositionColorNormal>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 24, p.cubeIndexes, 9, 2);
+                device.DrawUserIndexedPrimitives<VertexPositionColorNormal>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 24, p.cubeIndexes, 13, 2);
+                device.DrawUserIndexedPrimitives<VertexPositionColorNormal>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 24, p.cubeIndexes, 17, 2);
+                device.DrawUserIndexedPrimitives<VertexPositionColorNormal>(PrimitiveType.TriangleStrip, p.cubeVertexes, 0, 24, p.cubeIndexes, 21, 3);
             }
         }
     }

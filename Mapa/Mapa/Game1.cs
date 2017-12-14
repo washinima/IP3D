@@ -18,8 +18,8 @@ namespace Mapa
         {
             graphics = new GraphicsDeviceManager(this)
             {
-                //PreferredBackBufferWidth = 1920,
-                //PreferredBackBufferHeight = 1080,
+                PreferredBackBufferWidth = 1920 / 2,
+                PreferredBackBufferHeight = 1080 / 2,
                 //IsFullScreen = true
             };
             Content.RootDirectory = "Content";
@@ -33,11 +33,14 @@ namespace Mapa
             mapa = new Map(Content, GraphicsDevice, camera);
             tanques = new List<Tanque>
             {
-                new Tanque(Content, camera, 2, new Vector3(100f, 4f, 100f)),
-                new Tanque(Content, camera, 1, new Vector3(100f, 4f, 98f))
+                new Tanque(Content, camera, 0, new Vector3(100f, 4f, 100f), null),
+                new Tanque(Content, camera, 1, new Vector3(100f, 4f, 98f), null)
             };
             foreach (Tanque tanque in tanques)
+            {
                 tanque.LoadMapNormalsPos(mapa.normalPosition);
+                tanque.tanques = tanques;
+            }
 
             collisions = new Collisions(tanques);
 
