@@ -16,6 +16,8 @@ namespace Mapa
         Camera camera;
         public Matrix[] boneTransforms;
 
+        public Vector3 _oldPos, _disTravelled;
+
         private float _raio;
         private bool _isDead;
 
@@ -42,8 +44,14 @@ namespace Mapa
 
         public void Movement()
         {
+            _oldPos = position;
+                
             position += direction * Constants.CannonBallSpeed;
             direction.Y -= Constants.CannonBallDecay;
+
+            _disTravelled = position - _oldPos;
+
+
         }
 
         public bool IsDead()
