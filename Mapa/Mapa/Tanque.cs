@@ -185,8 +185,10 @@ namespace Mapa
             
             else //AI Tank
             {
-                if (false)//Constants.LengthOfVector3(tanques[1].Position - Position) > 5f)
+                double distance = Constants.LengthOfVector3(tanques[FindClosestTank()].Position - Position);
+                if (distance < 10f && distance > 5f)
                 {
+
                     Vector3 target = WanderBehaviour();
                     SeekBehaviour(target);
                     translacao.Translation += vel;
@@ -380,13 +382,30 @@ namespace Mapa
             leftFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftFrontWheelInitTransform;
         }
 
+        private int FindClosestTank()
+        {
+            int closest = 0;
+            for (int i = 0; i < tanques.Count; i++)
+            {
+                if (tanques[0].Position == this.Position)
+                {
+                    closest = 1;
+                    continue;
+                }
+
+                if (Constants.LengthOfVector3(tanques[i].Position - Position) < Constants.LengthOfVector3(tanques[closest].Position - Position))
+                    closest = i;
+            }
+
+            return closest;
+        }
+
         private Vector3 WanderBehaviour()
         {
             Vector3 target, centro;
             centro = Position + direction * 26f;
             float raio = 25f;
             float angle = MathHelper.ToRadians(random.Next(0, 359));
-            Console.WriteLine(angle + ", " + centro);
 
             target = new Vector3(centro.X + raio * (float)Math.Cos(angle), 0.0f, centro.Z + raio * -(float)Math.Sin(angle));
 
