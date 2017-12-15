@@ -52,6 +52,9 @@ namespace Mapa
             w = alturas.Width;
             h = alturas.Height;
 
+            Constants.MapHeight = h;
+            Constants.MapWidth = w;
+
             normalPosition = new NormalPosition[w, h];
 
             CreateMap(graphicsDevice);
@@ -103,7 +106,6 @@ namespace Mapa
             {
                 for (int x = 0; x < w; x++)
                 {
-                    //float y = (texels[z * w + x].R * scale);
                     float y = normalPosition[x, z].pos.Y;
                     vertexes[z * w + x] = new VertexPositionNormalTexture(new Vector3(x, y, z), Vector3.Up, new Vector2(x % 2, z % 2));
                 }
@@ -115,19 +117,6 @@ namespace Mapa
             vertexBuffer = new VertexBuffer(graphicsDevice, typeof(VertexPositionNormalTexture), vertexes.Length, BufferUsage.None);
             vertexBuffer.SetData(vertexes);
 
-            indexes = new ushort[h * 2 * (w - 1)];
-
-            for (int ix = 0; ix < w - 1; ix++)
-            {
-                for (int iz = 0; iz < h; iz++)
-                {
-                    indexes[2 * iz + 0 + ix * 2 * h] = (ushort)(iz * w + ix);
-                    indexes[2 * iz + 1 + ix * 2 * h] = (ushort)(iz * w + 1 + ix);
-                }
-            }
-
-            indexBuffer = new IndexBuffer(graphicsDevice, typeof(ushort), indexes.Length, BufferUsage.None);
-            indexBuffer.SetData(indexes);
         }
 
 

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,10 +70,29 @@ namespace Mapa
         {
             float topLeftX = (float)Math.Floor(position.X);
             float topLeftZ = (float)Math.Floor(position.Z);
-            normalPositions[(int) topLeftX, (int) topLeftZ].pos.Y -= Constants.Destruction;
-            normalPositions[(int)topLeftX + 1, (int)topLeftZ].pos.Y -= Constants.Destruction;
-            normalPositions[(int)topLeftX, (int)topLeftZ + 1].pos.Y -= Constants.Destruction;
-            normalPositions[(int)topLeftX + 1, (int)topLeftZ + 1].pos.Y -= Constants.Destruction;
+
+            for (int i = -1; i < 2; i++)
+            {
+                for (int j = -1; j < 2; j++)
+                {
+                    if ((int) topLeftX + i <= Constants.MapWidth && (int) topLeftX + i >= 0)
+                    {
+                        if( (int)topLeftZ + j <= Constants.MapHeight && (int)topLeftZ + j >= 0)
+                        {
+                            if (i == 0 && j == 0)
+                            {
+                                normalPositions[(int) topLeftX + i, (int) topLeftZ + j].pos.Y -= Constants.Destruction;
+                            }
+                            else
+                            {
+                                normalPositions[(int)topLeftX + i, (int)topLeftZ + j].pos.Y -= Constants.Destruction * 0.5f;
+                            }
+                        }
+                    }   
+
+                }
+            }
+
         }
 
 
