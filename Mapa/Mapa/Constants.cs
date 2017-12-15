@@ -23,6 +23,8 @@ namespace Mapa
         public static float MapHeightScale = 0.025f;
         public static float Destruction = 0.15f;
         public static bool isDestroyed = false;
+        public static int MapWidth = 0;
+        public static int MapHeight = 0;
 
         //----------------TANQUE----------------//
         public static float TankScale = 0.002f;
