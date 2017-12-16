@@ -13,6 +13,7 @@ namespace Mapa
         Camera camera;
         private Collisions collisions;
         List<Tanque> tanques;
+        SistemaDeParticulas sistemaDeParticulas;
 
         public Game1()
         {
@@ -31,10 +32,11 @@ namespace Mapa
             spriteBatch = new SpriteBatch(GraphicsDevice);
             camera = new Camera(Window);
             mapa = new Map(Content, GraphicsDevice, camera);
+            sistemaDeParticulas = new SistemaDeParticulas();
             tanques = new List<Tanque>
             {
-                new Tanque(Content, camera, 0, new Vector3(50f, 4f, 50f), null),
-                new Tanque(Content, camera, 1, new Vector3(100f, 4f, 98f), null)
+                new Tanque(Content, camera, sistemaDeParticulas, 0, new Vector3(50f, 4f, 50f), null),
+                new Tanque(Content, camera, sistemaDeParticulas, 1, new Vector3(100f, 4f, 98f), null)
             };
             foreach (Tanque tanque in tanques)
             {
@@ -72,6 +74,7 @@ namespace Mapa
 
             collisions.Update();
             mapa.Update();
+            sistemaDeParticulas.Update();
 
             base.Update(gameTime);
         }
@@ -85,6 +88,7 @@ namespace Mapa
             foreach (Tanque tanque in tanques)
                 tanque.Draw(GraphicsDevice);
 
+            sistemaDeParticulas.Draw(GraphicsDevice, camera);
 
             base.Draw(gameTime);
         }

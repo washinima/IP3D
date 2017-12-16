@@ -21,6 +21,7 @@ namespace Mapa
 
         private float _raio;
         private bool _isDead;
+        private SistemaDeParticulas sistemaDeParticulas;
 
         public float Raio
         {
@@ -33,11 +34,12 @@ namespace Mapa
             set { _isDead = value; }
         }
 
-        public Projectile(ContentManager content, Camera camera, Vector3 initialDirection, Vector3 initialPosition)
+        public Projectile(ContentManager content, Camera camera, SistemaDeParticulas sistemaDeParticulas,Vector3 initialDirection, Vector3 initialPosition)
         {
             ball = content.Load<Model>("CannonBall");
             boneTransforms = new Matrix[ball.Bones.Count];
             this.camera = camera;
+            this.sistemaDeParticulas = sistemaDeParticulas;
             position = initialPosition;
             direction = initialDirection;
             _raio = 0.01f;
@@ -49,16 +51,21 @@ namespace Mapa
                 
             position += direction * Constants.CannonBallSpeed;
             direction.Y -= Constants.CannonBallDecay;
-
+            
         }
 
         public bool IsDead(NormalPosition[,] normalPositions)
         {
-            if (position.Y < MapHeight(normalPositions))
+            if (position.X - Raio < 0 || position.X + Raio > normalPositions.GetLength(0) - 1)
+                _isDead = true;
+            else if (position.Z - Raio < 0 || position.Z + Raio > normalPositions.GetLength(1) - 1)
+                _isDead = true;
+            else if (position.Y < MapHeight(normalPositions))
             {
                 _isDead = true;
                 MapDestruction(normalPositions);
                 Constants.isDestroyed = true;
+                sistemaDeParticulas.DirtExplosion(position);
             }
             else
                 _isDead = false;
@@ -95,8 +102,7 @@ namespace Mapa
 
         }
 
-
-        private float MapHeight(NormalPosition[,] normalPositions )
+        private float MapHeight(NormalPosition[,] normalPositions)
         {
             Vector3 topLeft, topRight, bottomLeft, bottomRight;
             float topLeftX, topLeftZ;
@@ -117,7 +123,6 @@ namespace Mapa
 
             return heightFinal;
         }
-
 
         public void Draw()
         {

@@ -21,11 +21,11 @@ namespace Mapa
             random = new Random();
         }
 
-        public void Update(Tanque tanque)
+        public void Update()
         {
             for (int i = dust.Count - 1; i >= 0; i--)
             {
-                if (dust[i].position.Y <= 0f)
+                if (dust[i].duration > Constants.DustMaxDuration)
                     dust.Remove(dust[i]);
                 else
                     dust[i].Life();
@@ -36,14 +36,20 @@ namespace Mapa
         {
             if (goingForward)
             {
-                dust.Add(new ParticleDust(tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Right * 0.4f, tanque.rotacao.Forward + tanque.rotacao.Up * 0.3f, random, tanque.rotacao));
-                dust.Add(new ParticleDust(tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Left * 0.4f, tanque.rotacao.Forward + tanque.rotacao.Up * 0.3f, random, tanque.rotacao));
+                dust.Add(new ParticleDust((tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Right * 0.4f) + (new Vector3(random.Next(-10, 10) * tanque.rotacao.Left.X, 0f, random.Next(-10, 10) * tanque.rotacao.Left.Z)) / 50f, tanque.rotacao.Forward + tanque.rotacao.Up * 0.3f, Constants.DustTrailSize, 1f));
+                dust.Add(new ParticleDust((tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Left * 0.4f) + (new Vector3(random.Next(-10, 10) * tanque.rotacao.Left.X, 0f, random.Next(-10, 10) * tanque.rotacao.Left.Z)) / 50f, tanque.rotacao.Forward + tanque.rotacao.Up * 0.3f, Constants.DustTrailSize, 1f));
             }
             else
             {
-                dust.Add(new ParticleDust(tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Right * 0.4f, tanque.rotacao.Backward + tanque.rotacao.Up * 0.3f, random, tanque.rotacao));
-                dust.Add(new ParticleDust(tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Left * 0.4f, tanque.rotacao.Backward + tanque.rotacao.Up * 0.3f, random, tanque.rotacao));
+                dust.Add(new ParticleDust((tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Right * 0.4f) + (new Vector3(random.Next(-10, 10) * tanque.rotacao.Left.X, 0f, random.Next(-10, 10) * tanque.rotacao.Left.Z)) / 50f, tanque.rotacao.Backward + tanque.rotacao.Up * 0.3f, Constants.DustTrailSize, 1f));
+                dust.Add(new ParticleDust((tanque.Position + tanque.rotacao.Forward * 0.6f + tanque.rotacao.Left * 0.4f) + (new Vector3(random.Next(-10, 10) * tanque.rotacao.Left.X, 0f, random.Next(-10, 10) * tanque.rotacao.Left.Z)) / 50f, tanque.rotacao.Backward + tanque.rotacao.Up * 0.3f, Constants.DustTrailSize, 1f));
             }
+        }
+
+        public void DirtExplosion(Vector3 position)
+        {
+            for (int i = 0; i < 60; i++)
+                dust.Add(new ParticleDust(position, new Vector3(0.0f, random.Next(10, 30) / 10f, 0.0f) + new Vector3(random.Next(-10, 10), 0.0f, random.Next(-10, 10)) / 10f, Constants.DustExplosionSize, 5f));
         }
 
         public void Draw(GraphicsDevice device, Camera camera)

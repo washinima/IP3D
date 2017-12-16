@@ -33,10 +33,14 @@ namespace Mapa
         public static float TankWheelSpinSpeed = 0.06f;
         public static float CannonRotSpeed = 0.03f;
         public static float CannonBallSpeed = 0.8f;
-        public static float CannonBallDecay = 0.02f;
+        public static float CannonBallDecay = 0.01f;
         public static float CannonBallScale = 0.3f;
         public static float ShootCooldown = 0.5f;
 
+        //---------------PÓ---------------//
+        public static float DustTrailSize = 0.02f;
+        public static float DustExplosionSize = 0.06f;
+        public static float DustMaxDuration = 2f;
 
         public static double LengthOfVector3(Vector3 v)
         {

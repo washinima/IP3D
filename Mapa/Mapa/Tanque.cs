@@ -71,10 +71,10 @@ namespace Mapa
         Random random;
         #endregion
 
-        public Tanque(ContentManager content, Camera camera, int playerNum, Vector3 posicaoInicial, List<Tanque> tanques)
+        public Tanque(ContentManager content, Camera camera, SistemaDeParticulas sistemaDeParticulas, int playerNum, Vector3 posicaoInicial, List<Tanque> tanques)
         {
             this.tanques = tanques;
-            sistemaDeParticulas = new SistemaDeParticulas();
+            this.sistemaDeParticulas = sistemaDeParticulas;
             _r = 0.6f;
             shootTime = 1f;
             vel = Vector3.Zero;
@@ -180,7 +180,6 @@ namespace Mapa
                     else
                         projectiles[i].Movement();
                 }
-                sistemaDeParticulas.Update(this);
             }
             
             else //AI Tank
@@ -206,7 +205,6 @@ namespace Mapa
                 UpdateTankNormal();
                 
                 tPos = Matrix.CreateScale(Constants.TankScale) * rotacao * translacao;
-                sistemaDeParticulas.Update(this);
             }
             
         }
@@ -353,7 +351,7 @@ namespace Mapa
         private void Shoot()
         {
             shootTime = 0.0f;
-            projectiles.Add(new Projectile(content, camera, cannonDirection, (tPos.Translation - tankForward * 0.1f) + tankNormal * 0.65f + turretForward * -0.25f));
+            projectiles.Add(new Projectile(content, camera, sistemaDeParticulas, cannonDirection, (tPos.Translation - tankForward * 0.1f) + tankNormal * 0.65f + turretForward * -0.25f));
         }
 
         private void MoveWheelsForward(bool isGoingForward)
@@ -471,8 +469,6 @@ namespace Mapa
 
             foreach (Projectile p in projectiles)
                 p.Draw();
-
-            sistemaDeParticulas.Draw(device, camera);
         }
     }
 }

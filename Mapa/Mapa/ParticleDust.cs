@@ -44,15 +44,19 @@ namespace Mapa
         public short[] cubeIndexes;
         private float cubeSize;
         private Color brown;
+        private float mass;
+        public float duration;
 
-        public ParticleDust(Vector3 initialPosition, Vector3 initialDirection, Random random, Matrix rotacao)
+        public ParticleDust(Vector3 initialPosition, Vector3 initialDirection, float size, float mass)
         {
-            position = initialPosition + (new Vector3(random.Next(-10, 10) * rotacao.Left.X, 0f, random.Next(-10, 10) * rotacao.Left.Z)) / 50f;
+            duration = 0.0f;
+            position = initialPosition;
 
-            direction = initialDirection + (Vector3.Normalize(new Vector3(random.Next(-10, 10), 0, random.Next(-10, 10)))) * 0.07f;
+            direction = initialDirection;
 
+            this.mass = mass;
             speed = 0.02f;
-            cubeSize = 0.02f;
+            cubeSize = size;
             cubeVertexes = new VertexPositionColorNormal[24];
             brown = new Color(68, 50, 33)
             {
@@ -63,8 +67,8 @@ namespace Mapa
         public void Life()
         {
             position += direction * speed;
-            direction.Y -= 0.02f;
-
+            direction.Y -= 0.01f * mass;
+            duration += 1f / 60f;
 
             //Bastava ter importado um modelo mas quis experimentar asssim
             //Base
