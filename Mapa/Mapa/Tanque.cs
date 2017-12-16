@@ -185,7 +185,7 @@ namespace Mapa
             
             else //AI Tank
             {
-                if (false)//Constants.LengthOfVector3(tanques[1].Position - Position) > 5f)
+                if (true)//Constants.LengthOfVector3(tanques[1].Position - Position) > 5f)
                 {
                     Vector3 target = WanderBehaviour();
                     SeekBehaviour(target);
@@ -298,9 +298,9 @@ namespace Mapa
             Matrix rotationPlane = Matrix.CreateFromAxisAngle(tankNormal, yaw);
             direction = Vector3.Transform(origin, rotationPlane);
 
-            if (position.X < 0 || position.X > normalPositions.GetLength(0) - 1)
+            if (position.X - Raio < 0 || position.X + Raio > normalPositions.GetLength(0) - 1)
                 position.X = oldPosition.X;
-            if (position.Z < 0 || position.Z > normalPositions.GetLength(1) - 1)
+            if (position.Z - Raio < 0 || position.Z + Raio > normalPositions.GetLength(1) - 1)
                 position.Z = oldPosition.Z;
 
             position.Y = UpdateTankHeight();
