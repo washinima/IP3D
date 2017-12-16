@@ -101,11 +101,11 @@ namespace Mapa
                     kRight = Keys.D;
                     kLeft = Keys.A;
                     kBackward = Keys.S;
-                    kShoot = Keys.E;
-                    kCannonUp = Keys.T;
-                    kCannonDown = Keys.G;
-                    kCannonLeft = Keys.F;
-                    kCannonRight = Keys.H;
+                    kShoot = Keys.Space;
+                    kCannonUp = Keys.Up;
+                    kCannonDown = Keys.Down;
+                    kCannonLeft = Keys.Left;
+                    kCannonRight = Keys.Right;
                     break;
                 case 2:
                     kForward = Keys.I;
@@ -113,10 +113,10 @@ namespace Mapa
                     kLeft = Keys.J;
                     kBackward = Keys.K;
                     kShoot = Keys.O;
-                    kCannonUp = Keys.Up;
-                    kCannonDown = Keys.Down;
-                    kCannonLeft = Keys.Left;
-                    kCannonRight = Keys.Right;
+                    kCannonUp = Keys.T;
+                    kCannonDown = Keys.G;
+                    kCannonLeft = Keys.F;
+                    kCannonRight = Keys.H;
                     break;
             }
 
@@ -185,17 +185,23 @@ namespace Mapa
             
             else //AI Tank
             {
-                double distance = Constants.LengthOfVector3(tanques[FindClosestTank()].Position - Position);
-                if (distance < 10f && distance > 5f)
+                int closestTanqueIndex = FindClosestTank();
+                double distance = Constants.LengthOfVector3(tanques[closestTanqueIndex].Position - Position);
+                if (distance > 5f)
                 {
-
-                    Vector3 target = WanderBehaviour();
-                    SeekBehaviour(target);
+                    if (distance < 30f)
+                    {
+                        SeekBehaviour(PursuitBehaviour(closestTanqueIndex));
+                    }
+                    else
+                    {
+                        SeekBehaviour(WanderBehaviour());
+                    }
                     translacao.Translation += vel;
                     sistemaDeParticulas.AddDust(this, true);
                     direction = Vector3.Normalize(vel);
+                    MoveWheelsForward(true);
                 }
-
                 translacao = Matrix.CreateTranslation(new Vector3(translacao.Translation.X, UpdateTankHeight(), translacao.Translation.Z));
                 UpdateTankNormal();
                 
@@ -400,11 +406,16 @@ namespace Mapa
             return closest;
         }
 
+        private Vector3 PursuitBehaviour(int tankIndex)
+        {
+            return tanques[tankIndex].Position + tanques[tankIndex].direction * 3f;
+        }
+
         private Vector3 WanderBehaviour()
         {
             Vector3 target, centro;
-            centro = Position + direction * 26f;
-            float raio = 25f;
+            centro = Position + direction * 50f;
+            float raio = 30f;
             float angle = MathHelper.ToRadians(random.Next(0, 359));
 
             target = new Vector3(centro.X + raio * (float)Math.Cos(angle), 0.0f, centro.Z + raio * -(float)Math.Sin(angle));
@@ -415,7 +426,7 @@ namespace Mapa
         private void SeekBehaviour(Vector3 target)
         {
             Vector3 vSeek = Vector3.Normalize(target - Position);
-            Vector3 acceleration = Vector3.Normalize(vSeek - vel) * 0.001f;
+            Vector3 acceleration = Vector3.Normalize(vSeek - vel) * 0.005f;
             vel = Vector3.Normalize(vel + acceleration) * Constants.TankMovSpeed;
         }
 

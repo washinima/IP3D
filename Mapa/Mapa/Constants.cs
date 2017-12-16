@@ -16,7 +16,7 @@ namespace Mapa
         public static float CameraSurfaceOffset = 1.5f;
         public static float CameraMovementSpeed = 0.2f;
         public static float CameraSensitivity = 0.2f;
-        public static Vector3 CameraInitialPosition = new Vector3(100f, 50f, 100f);
+        public static Vector3 CameraInitialPosition = new Vector3(50f, 50f, 50f);
 
 
         //----------------MAPA----------------//
@@ -32,7 +32,7 @@ namespace Mapa
         public static float TankRotSpeed = 2f;
         public static float TankWheelSpinSpeed = 0.06f;
         public static float CannonRotSpeed = 0.03f;
-        public static float CannonBallSpeed = 0.6f;
+        public static float CannonBallSpeed = 0.8f;
         public static float CannonBallDecay = 0.02f;
         public static float CannonBallScale = 0.3f;
         public static float ShootCooldown = 0.5f;

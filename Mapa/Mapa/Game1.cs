@@ -33,7 +33,7 @@ namespace Mapa
             mapa = new Map(Content, GraphicsDevice, camera);
             tanques = new List<Tanque>
             {
-                new Tanque(Content, camera, 0, new Vector3(100f, 4f, 100f), null),
+                new Tanque(Content, camera, 0, new Vector3(50f, 4f, 50f), null),
                 new Tanque(Content, camera, 1, new Vector3(100f, 4f, 98f), null)
             };
             foreach (Tanque tanque in tanques)
