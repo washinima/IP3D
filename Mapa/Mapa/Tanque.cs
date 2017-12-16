@@ -197,7 +197,7 @@ namespace Mapa
                     {
                         SeekBehaviour(WanderBehaviour());
                     }
-                    translacao.Translation += vel;
+                    translacao.Translation = AIMovement();
                     sistemaDeParticulas.AddDust(this, true);
                     direction = Vector3.Normalize(vel);
                     MoveWheelsForward(true);
@@ -386,6 +386,19 @@ namespace Mapa
             rightFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * rightFrontWheelInitTransform;
             leftBackWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftBackWheelInitTransform;
             leftFrontWheelTransform = Matrix.CreateRotationX(wheelRotationPitch) * leftFrontWheelInitTransform;
+        }
+
+        private Vector3 AIMovement()
+        {
+            Vector3 oldPosition = Position;
+            Vector3 position = Position + vel;
+
+            if (position.X - Raio < 0 || position.X + Raio > normalPositions.GetLength(0) - 1)
+                position.X = oldPosition.X;
+            if (position.Z - Raio < 0 || position.Z + Raio > normalPositions.GetLength(1) - 1)
+                position.Z = oldPosition.Z;
+
+            return position;
         }
 
         private int FindClosestTank()
