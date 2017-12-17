@@ -66,6 +66,11 @@ namespace Mapa
             get { return projectiles; }
         }
 
+        public NormalPosition[,] NormalPosition
+        {
+            get { return normalPositions; }
+        }
+
         public List<Tanque> tanques;
         SistemaDeParticulas sistemaDeParticulas;
         Random random;
@@ -304,11 +309,6 @@ namespace Mapa
             Matrix rotationPlane = Matrix.CreateFromAxisAngle(tankNormal, yaw);
             direction = Vector3.Transform(origin, rotationPlane);
 
-            if (position.X - Raio < 0 || position.X + Raio > normalPositions.GetLength(0) - 1)
-                position.X = oldPosition.X;
-            if (position.Z - Raio < 0 || position.Z + Raio > normalPositions.GetLength(1) - 1)
-                position.Z = oldPosition.Z;
-
             position.Y = UpdateTankHeight();
 
             camera.PosicaoRotationTank(position, tankForward);
@@ -388,13 +388,8 @@ namespace Mapa
 
         private Vector3 AIMovement()
         {
-            Vector3 oldPosition = Position;
+            oldPosition = Position;
             Vector3 position = Position + vel;
-
-            if (position.X - Raio < 0 || position.X + Raio > normalPositions.GetLength(0) - 1)
-                position.X = oldPosition.X;
-            if (position.Z - Raio < 0 || position.Z + Raio > normalPositions.GetLength(1) - 1)
-                position.Z = oldPosition.Z;
 
             return position;
         }

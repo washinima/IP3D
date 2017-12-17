@@ -106,11 +106,12 @@ namespace Mapa
                                    AB.Z * AC.Z / 
                                    (Constants.LengthOfVector3(AB) * Constants.LengthOfVector3(AC))
                                );
-                               */
+                               
 
                 
 
-                //double angle = Math.Acos(Vector3.Dot(AB, AC));
+                double angle = Math.Acos(Vector3.Dot(AB, AC));
+                */
 
                 
                 /* Se dot for positivo o angulo e agudo
@@ -167,8 +168,27 @@ namespace Mapa
                     TankCollisionUpdateHelper(_tanqueList[i], _tanqueList[j]);
 
                     BulletCollisionUpdate(_tanqueList[i], _tanqueList[j]);
+
+                    
                 }
             }
+
+            for (int i = 0; i <= _tanqueList.Count - 1; i++)
+            {
+                if (_tanqueList[i].Position.X - _tanqueList[i].Raio < 0 || _tanqueList[i].Position.X + _tanqueList[i].Raio > _tanqueList[i].NormalPosition.GetLength(0) - 1)
+                    _tanqueList[i].Position = new Vector3(
+                        _tanqueList[i].OldPosition.X,
+                        _tanqueList[i].Position.Y,
+                        _tanqueList[i].Position.Z
+                    );
+                if (_tanqueList[i].Position.Z - _tanqueList[i].Raio < 0 || _tanqueList[i].Position.Z + _tanqueList[i].Raio > _tanqueList[i].NormalPosition.GetLength(1) - 1)
+                    _tanqueList[i].Position = new Vector3(
+                        _tanqueList[i].Position.X,
+                        _tanqueList[i].Position.Y,
+                        _tanqueList[i].OldPosition.Z
+                    );
+            }
+
         }
 
         public void Update () 
