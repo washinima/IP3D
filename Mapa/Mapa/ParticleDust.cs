@@ -47,7 +47,7 @@ namespace Mapa
         private float mass;
         public float duration;
 
-        public ParticleDust(Vector3 initialPosition, Vector3 initialDirection, float size, float mass)
+        public ParticleDust(Vector3 initialPosition, Vector3 initialDirection, float size, float mass, Color color)
         {
             duration = 0.0f;
             position = initialPosition;
@@ -58,10 +58,7 @@ namespace Mapa
             speed = 0.02f;
             cubeSize = size;
             cubeVertexes = new VertexPositionColorNormal[24];
-            brown = new Color(68, 50, 33)
-            {
-                A = 10
-            };
+            brown = color;
         }
 
         public void Life()

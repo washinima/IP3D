@@ -44,6 +44,13 @@ namespace Mapa
 
         private float _r;
         private Vector3 oldPosition;
+        private int _health;
+
+        public int Health
+        {
+            get { return _health; }
+            set { _health = value; }
+        }
 
         public float Raio
         {
@@ -71,13 +78,22 @@ namespace Mapa
             get { return normalPositions; }
         }
 
+       
+
         public List<Tanque> tanques;
         SistemaDeParticulas sistemaDeParticulas;
         Random random;
+
+        public SistemaDeParticulas SistemaDeParticulas
+        {
+            get { return sistemaDeParticulas; }
+        }
+
         #endregion
 
         public Tanque(ContentManager content, Camera camera, SistemaDeParticulas sistemaDeParticulas, int playerNum, Vector3 posicaoInicial, List<Tanque> tanques)
         {
+            _health = 5;
             this.tanques = tanques;
             this.sistemaDeParticulas = sistemaDeParticulas;
             _r = 0.6f;

@@ -101,19 +101,7 @@ namespace Mapa
                 double distance = 2 * areaTri / ab;
 
 
-                /*double angle = Math.Acos(
-                                   AB.X * AC.X + AB.Y * AC.Y +
-                                   AB.Z * AC.Z / 
-                                   (Constants.LengthOfVector3(AB) * Constants.LengthOfVector3(AC))
-                               );
-                               
-
-                
-
-                double angle = Math.Acos(Vector3.Dot(AB, AC));
-                */
-
-                
+              
                 /* Se dot for positivo o angulo e agudo
                  * Se for 0 e perpendicular
                  * Se for negativo e obtuso
@@ -127,11 +115,22 @@ namespace Mapa
                 {
                     hit++;
                     Debug.WriteLine("HIT " + hit);
-                    _bullets[i].Dead = true;    
+                    _bullets[i].Dead = true;
+                    b.Health -= 1;
                 }
 
-                
 
+                /*double angle = Math.Acos(
+                                  AB.X * AC.X + AB.Y * AC.Y +
+                                  AB.Z * AC.Z / 
+                                  (Constants.LengthOfVector3(AB) * Constants.LengthOfVector3(AC))
+                              );
+
+
+
+
+               double angle = Math.Acos(Vector3.Dot(AB, AC));
+               */
 
                 /*Vector3 distEntreObj = b.Position - prediction;
                 distEntreObj = new Vector3(
@@ -158,6 +157,31 @@ namespace Mapa
             BulletCollisionUpdateHelper(tanque2, tanque1);
         }
 
+        private void BulletRemoval(Tanque tanque)
+        {
+            for (int i = tanque.Projectiles.Count - 1; i >= 0 ; i--)
+            {
+                if (tanque.Projectiles[i].Dead)
+                {
+                    tanque.Projectiles.RemoveAt(i);
+                }
+            }
+        }
+
+        private void TankRemoval()
+        {
+            for (int i = _tanqueList.Count - 1; i >= 0; i--)
+            {
+                if (_tanqueList[i].Health <= 0)
+                {
+                    _tanqueList[i].SistemaDeParticulas.TankExplosion(_tanqueList[i].Position);
+                    _tanqueList.RemoveAt(i);
+                }
+            }
+        }
+
+
+
         public void CollisionUpdate()
         {
             //Ao usar helpers nao preciso de percorrer a lista varias vezes. Apenas uma.
@@ -169,7 +193,6 @@ namespace Mapa
 
                     BulletCollisionUpdate(_tanqueList[i], _tanqueList[j]);
 
-                    
                 }
             }
 
@@ -187,7 +210,13 @@ namespace Mapa
                         _tanqueList[i].Position.Y,
                         _tanqueList[i].OldPosition.Z
                     );
+
+
+                BulletRemoval(_tanqueList[i]);
+
             }
+
+            TankRemoval();
 
         }
 
