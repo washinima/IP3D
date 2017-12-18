@@ -263,8 +263,8 @@ namespace Mapa
             normalFinal = (position.Z - topLeft.pos.Z) * normalBottom + (bottomLeft.pos.Z- position.Z) * normalTop;
 
             tankNormal = Vector3.Normalize(normalFinal);
-            tankRight = Vector3.Cross(direction, tankNormal);
-            tankForward = Vector3.Cross(tankNormal, tankRight);
+            tankRight = Vector3.Normalize(Vector3.Cross(direction, tankNormal));
+            tankForward = Vector3.Normalize(Vector3.Cross(tankNormal, tankRight));
 
             rotacao.Up = tankNormal;
             rotacao.Right = tankRight;
