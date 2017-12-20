@@ -35,7 +35,7 @@ namespace Mapa
         public static float CannonBallSpeed = 0.8f;
         public static float CannonBallDecay = 0.01f;
         public static float CannonBallScale = 0.3f;
-        public static float ShootCooldown = 0.5f;
+        public static float ShootCooldown = 1.2f;
 
         //---------------PÓ---------------//
         public static float DustTrailSize = 0.02f;

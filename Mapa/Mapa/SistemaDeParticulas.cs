@@ -74,13 +74,11 @@ namespace Mapa
                 A = 10
             };
 
-            for (int i = 0; i < 200; i++)
-                if( i < 101)
-                    dust.Add(new ParticleDust(position, new Vector3(0.0f, random.Next(10, 30) / 10f, 0.0f) + new Vector3(random.Next(-10, 10), 0.0f, random.Next(-10, 10)) / 10f, Constants.DustExplosionSize, 5f, red));
-                else
-                {
-                    dust.Add(new ParticleDust(position, new Vector3(0.0f, random.Next(10, 30) / 10f, 0.0f) + new Vector3(random.Next(-10, 10), 0.0f, random.Next(-10, 10)) / 10f, Constants.DustExplosionSize, 5f, brown));
-                }
+            for (int i = 0; i < 100; i++)
+            {
+                dust.Add(new ParticleDust(position, new Vector3(0.0f, random.Next(10, 30) / 10f, 0.0f) + new Vector3(random.Next(-10, 10), 0.0f, random.Next(-10, 10)) / 10f, Constants.DustExplosionSize, 5f, red));
+                dust.Add(new ParticleDust(position, new Vector3(0.0f, random.Next(10, 30) / 10f, 0.0f) + new Vector3(random.Next(-10, 10), 0.0f, random.Next(-10, 10)) / 10f, Constants.DustExplosionSize, 5f, brown));
+            }
         }
 
         public void Draw(GraphicsDevice device, Camera camera)

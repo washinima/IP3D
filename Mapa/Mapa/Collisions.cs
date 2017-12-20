@@ -11,7 +11,6 @@ namespace Mapa
     public class Collisions
     {
         private List<Tanque> _tanqueList;
-        private int hit = 0;
 
         public Collisions(List<Tanque> tanques)
         {
@@ -113,8 +112,6 @@ namespace Mapa
 
                 if (distance < somaRadio && dot > 0)
                 {
-                    hit++;
-                    Debug.WriteLine("HIT " + hit);
                     _bullets[i].Dead = true;
                     b.Health -= 1;
                 }

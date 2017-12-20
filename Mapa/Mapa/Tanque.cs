@@ -227,7 +227,6 @@ namespace Mapa
                 
                 tPos = Matrix.CreateScale(Constants.TankScale) * rotacao * translacao;
             }
-            
         }
 
         private float UpdateTankHeight()
@@ -421,7 +420,8 @@ namespace Mapa
                     continue;
                 }
 
-                if (Constants.LengthOfVector3(tanques[i].Position - Position) < Constants.LengthOfVector3(tanques[closest].Position - Position))
+                if (Constants.LengthOfVector3(tanques[i].Position - Position) < Constants.LengthOfVector3(tanques[closest].Position - Position) 
+                    && Constants.LengthOfVector3(tanques[i].Position - Position) != 0f)
                     closest = i;
             }
 
